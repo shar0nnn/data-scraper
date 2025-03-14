@@ -24,6 +24,13 @@ class ScrapedProductSeeder extends Seeder
                 'retailer_id' => $retailers->random(),
                 'price' => $faker->randomFloat(2),
                 'stock_count' => $faker->randomNumber(),
+                'rating' => json_encode([
+                    1 => $faker->randomNumber(),
+                    2 => $faker->randomNumber(),
+                    3 => $faker->randomNumber(),
+                    4 => $faker->randomNumber(),
+                    5 => $faker->randomNumber(),
+                ]),
                 'scraped_at' => Carbon::instance($faker->dateTimeBetween('-1 year'))->toDateTimeString(),
                 'updated_at' => now(),
                 'created_at' => now(),

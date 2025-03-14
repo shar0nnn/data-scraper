@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             CurrencySeeder::class,
             RetailerSeeder::class,
-            ProductRatingSeeder::class,
             ScrapedProductSeeder::class,
             ImageSeeder::class,
         ]);
