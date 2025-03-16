@@ -11,6 +11,8 @@ class ScrapedProduct extends Model
         'retailer_id',
         'price',
         'stock_count',
+        'rating',
+        'session_key',
         'scraped_at',
     ];
 }

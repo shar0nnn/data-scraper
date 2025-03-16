@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
             $table->morphs('imageable');
-            $table->string('link', 500)->nullable();
+            $table->string('link', 1000);
             $table->timestamps();
         });
     }

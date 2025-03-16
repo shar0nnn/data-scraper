@@ -2,25 +2,25 @@
 
 namespace Database\Seeders;
 
+use App\Models\Image;
 use App\Models\PackSize;
 use App\Models\Product;
+use App\Models\Retailer;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        Product::query()->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
-
         $faker = Faker::create();
         $packSizes = PackSize::query()->pluck('id');
+        $retailers = Retailer::query()->pluck('id');
         for ($i = 0; $i < 1000; $i++) {
             $products[] = [
-                'title' => $faker->unique()->words(asText: true),
+                'retailer_id' => $retailers->random(),
+                'url' => $faker->url(),
+                'title' => $faker->words(asText: true),
                 'description' => $faker->text(),
                 'manufacturer_part_number' => $faker->unique()->numerify('###############'),
                 'pack_size_id' => $packSizes->random(),
@@ -28,7 +28,19 @@ class ProductSeeder extends Seeder
                 'created_at' => now(),
             ];
         }
-
         Product::query()->insert($products);
+
+        $products = Product::query()->pluck('id');
+        $images = [];
+        for ($i = 0; $i < count($products); $i++) {
+            $images[] = [
+                'imageable_id' => $faker->unique()->randomElement($products),
+                'imageable_type' => Product::class,
+                'link' => $faker->url(),
+                'updated_at' => now(),
+                'created_at' => now(),
+            ];
+        }
+        Image::query()->insert($images);
     }
 }

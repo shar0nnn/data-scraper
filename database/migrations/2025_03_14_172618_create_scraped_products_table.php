@@ -15,9 +15,9 @@ return new class extends Migration {
             $table->foreignId('product_id')->constrained();
             $table->foreignId('retailer_id')->constrained();
             $table->decimal('price', 14)->nullable();
-            $table->unsignedBigInteger('stock_count')->nullable();
+            $table->unsignedInteger('stock_count')->nullable();
             $table->json('rating')->nullable();
-            $table->timestamp('scraped_at');
+            $table->char('session_key', 16)->index();
             $table->timestamps();
         });
     }
