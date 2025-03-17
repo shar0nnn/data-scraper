@@ -2,63 +2,50 @@
 
 namespace Database\Seeders;
 
-use App\Models\Product;
 use App\Models\Retailer;
-use App\Models\ScrapedImage;
 use App\Models\ScrapedProduct;
-use Faker\Factory as Faker;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
+use App\Models\ScrapingSession;
+use Illuminate\Support\Facades\DB;
 
-class ScrapedProductSeeder extends Seeder
+class ScrapedProductSeeder extends MainSeeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
-        $retailers = Retailer::query()->pluck('id');
-        $products = Product::query()->get()->groupBy('retailer_id')->map->pluck('id');
         $scrapedProducts = [];
+        $retailers = Retailer::query()->pluck('id');
+        $products = DB::table('product_retailer')
+            ->select('retailer_id', 'product_id')
+            ->get()
+            ->groupBy('retailer_id')
+            ->map(fn($group) => $group->pluck('product_id'));
+        $scrapingSessions = ScrapingSession::query()->pluck('id');
+        $currentScrapingSession = 0;
 
         for ($i = 0; $i < 365; $i++) {
             foreach ($retailers as $retailer) {
-                $sessionKey = Str::random();
                 foreach ($products[$retailer] as $product) {
                     $scrapedProducts[] = [
                         'product_id' => $product,
                         'retailer_id' => $retailer,
-                        'price' => $faker->randomFloat(2, 0, 1000000),
-                        'stock_count' => $faker->numberBetween(0, 100000),
+                        'price' => $this->faker->randomFloat(2, 0, 100000),
+                        'stock_count' => $this->faker->numberBetween(0, 10000),
                         'rating' => json_encode([
-                            1 => $faker->numberBetween(0, 100000),
-                            2 => $faker->numberBetween(0, 100000),
-                            3 => $faker->numberBetween(0, 100000),
-                            4 => $faker->numberBetween(0, 100000),
-                            5 => $faker->numberBetween(0, 100000),
+                            1 => $this->faker->numberBetween(0, 10000),
+                            2 => $this->faker->numberBetween(0, 10000),
+                            3 => $this->faker->numberBetween(0, 10000),
+                            4 => $this->faker->numberBetween(0, 10000),
+                            5 => $this->faker->numberBetween(0, 10000),
                         ]),
-                        'session_key' => $sessionKey,
+                        'scraping_session_id' => $scrapingSessions[$currentScrapingSession],
                         'updated_at' => now(),
                         'created_at' => now(),
                     ];
                 }
+                $currentScrapingSession++;
             }
 
             ScrapedProduct::query()->insert($scrapedProducts);
             $scrapedProducts = [];
-        }
-
-        $scrapedProducts = ScrapedProduct::query()->pluck('id');
-        $scrapedImages = [];
-        for ($i = 0; $i < count($scrapedProducts); $i++) {
-            $scrapedImages[] = [
-                'scraped_product_id' => $scrapedProducts->random(),
-                'url' => $faker->url(),
-                'updated_at' => now(),
-                'created_at' => now(),
-            ];
-        }
-
-        foreach (array_chunk($scrapedImages, 1000) as $chunk) {
-            ScrapedImage::query()->insert($chunk);
         }
     }
 }
