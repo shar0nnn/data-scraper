@@ -6,8 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class ScrapingSession extends Model
 {
-    protected $fillable = [
-        'session_key',
-        'status',
-    ];
+    protected $fillable = ['status',];
 }

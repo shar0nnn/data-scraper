@@ -13,9 +13,7 @@ class ScrapingSessionSeeder extends MainSeeder
     public function run(): void
     {
         for ($i = 0; $i < 3650; $i++) {
-            $sessionKey = Str::random();
             $scrapingSessions[] = [
-                'session_key' => $sessionKey,
                 'status' => $this->faker->words(asText: true),
                 'created_at' => now(),
                 'updated_at' => now(),
