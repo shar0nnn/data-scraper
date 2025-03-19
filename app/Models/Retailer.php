@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Retailer extends Model
 {
-    const string LOGO_PATH = Image::ROOT_PATH . 'logos';
+    const string LOGO_PATH = Image::ROOT_PATH . 'retailers';
     protected $fillable = [
         'title',
         'url',
