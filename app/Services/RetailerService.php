@@ -72,9 +72,10 @@ class RetailerService
             DB::beginTransaction();
             $link = $retailer->logo->link;
             $retailer->logo()->delete();
+            $retailer->products()->detach();
             $retailer->delete();
-            Storage::disk('public')->delete($link);
             DB::commit();
+            Storage::disk('public')->delete($link);
 
             return true;
 
