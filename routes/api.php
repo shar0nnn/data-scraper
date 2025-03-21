@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\RetailerController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,5 +13,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [RetailerController::class, 'store'])->name('store');
         Route::patch('/{retailer}', [RetailerController::class, 'update'])->name('update');
         Route::delete('/{retailer}', [RetailerController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('products')->name('products.')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('index');
+        Route::post('/', [ProductController::class, 'store'])->name('store');
+        Route::patch('/{product}', [ProductController::class, 'update'])->name('update');
+        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
     });
 });

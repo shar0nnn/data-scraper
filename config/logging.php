@@ -133,6 +133,12 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'products' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/products.log'),
+            'ignore_exceptions' => false,
+        ],
+
     ],
 
 ];
