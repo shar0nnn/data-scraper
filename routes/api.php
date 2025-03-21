@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CurrencyController;
 use App\Http\Controllers\API\PackSizeController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\RetailerController;
@@ -27,5 +28,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [PackSizeController::class, 'store'])->name('store');
         Route::patch('/{packSize}', [PackSizeController::class, 'update'])->name('update');
         Route::delete('/{packSize}', [PackSizeController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('currencies')->name('currencies.')->group(function () {
+        Route::get('/', [CurrencyController::class, 'index'])->name('index');
+        Route::post('/', [CurrencyController::class, 'store'])->name('store');
+        Route::patch('/{currency}', [CurrencyController::class, 'update'])->name('update');
+        Route::delete('/{currency}', [CurrencyController::class, 'destroy'])->name('destroy');
     });
 });
