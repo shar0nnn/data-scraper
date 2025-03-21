@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\PackSizeController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\RetailerController;
 use Illuminate\Support\Facades\Route;
@@ -19,5 +20,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('store');
         Route::patch('/{product}', [ProductController::class, 'update'])->name('update');
         Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('pack-sizes')->name('pack-sizes.')->group(function () {
+        Route::get('/', [PackSizeController::class, 'index'])->name('index');
+        Route::post('/', [PackSizeController::class, 'store'])->name('store');
+        Route::patch('/{packSize}', [PackSizeController::class, 'update'])->name('update');
+        Route::delete('/{packSize}', [PackSizeController::class, 'destroy'])->name('destroy');
     });
 });
