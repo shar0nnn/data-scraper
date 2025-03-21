@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Filters\ScrapedProductFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Retailer\StoreRetailerRequest;
 use App\Http\Requests\Retailer\UpdateRetailerRequest;
 use App\Http\Resources\RetailerResource;
 use App\Models\Retailer;
+use App\Models\ScrapedProduct;
 use App\Services\RetailerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -68,5 +70,32 @@ class RetailerController extends Controller
         }
 
         return response()->json(['message' => 'Retailer deleted successfully.']);
+    }
+
+    public function metrics(ScrapedProductFilter $scrapedProductFilter): JsonResponse
+    {
+        $data = ScrapedProduct::query()
+            ->selectRaw('avg(price) as average_price, retailer_id')
+            ->filter($scrapedProductFilter)
+            ->groupBy('retailer_id')
+            ->get();
+
+        $data = $data->map(function ($element) use ($scrapedProductFilter) {
+            $scrapedProducts = ScrapedProduct::query()
+                ->filter($scrapedProductFilter)
+                ->where('retailer_id', $element->retailer_id)
+                ->withCount('scrapedImages')
+                ->get();
+
+            $totalNumberOfImages = $scrapedProducts->sum('scraped_images_count');
+            $totalRating = $scrapedProducts->sum(fn($element) => $element->averageRating());
+
+            $element->average_number_of_images = round($totalNumberOfImages / $scrapedProducts->count(), 2);
+            $element->average_rating = round($totalRating / $scrapedProducts->count(), 2);
+
+            return $element;
+        });
+
+        return response()->json(['data' => $data]);
     }
 }
