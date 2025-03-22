@@ -139,6 +139,12 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'scrapedProducts' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/scraped-products.log'),
+            'ignore_exceptions' => false,
+        ],
+
     ],
 
 ];
