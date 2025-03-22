@@ -10,10 +10,20 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'SuperUser',
-            'email' => 'admin@gmail.com',
-            'password' => 'admin123'
-        ]);
+        if (!User::query()->where('email', 'admin@gmail.com')->exists()) {
+            User::factory()->create([
+                'name' => 'SuperUser',
+                'email' => 'admin@gmail.com',
+                'password' => 'admin123'
+            ]);
+        }
+
+        if (!User::query()->where('email', 'parser@gmail.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Parser',
+                'email' => 'parser@gmail.com',
+                'password' => 'parser123'
+            ]);
+        }
     }
 }
