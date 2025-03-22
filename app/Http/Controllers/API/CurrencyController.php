@@ -20,7 +20,7 @@ class CurrencyController extends Controller
     {
         return response()->json([
             'message' => 'Currency created successfully.',
-            'data' => Currency::query()->create($request->validated()),
+            'data' => new CurrencyResource(Currency::query()->create($request->validated())),
         ]);
     }
 
@@ -34,8 +34,8 @@ class CurrencyController extends Controller
         $currency->update($request->validated());
 
         return response()->json([
-            'message' => 'Pack size updated successfully.',
-            'data' => $currency,
+            'message' => 'Currency updated successfully.',
+            'data' => new CurrencyResource($currency),
         ]);
     }
 
