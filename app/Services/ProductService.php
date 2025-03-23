@@ -114,6 +114,10 @@ class ProductService
 
             DB::beginTransaction();
             $product->images()->delete();
+            $product->scrapedProducts->each(function ($scrapedProduct) {
+                $scrapedProduct->scrapedImages()->delete();
+            });
+            $product->scrapedProducts()->delete();
             $product->retailers()->detach();
             $product->delete();
             DB::commit();

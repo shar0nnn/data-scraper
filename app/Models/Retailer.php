@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Retailer extends Model
@@ -29,5 +30,10 @@ class Retailer extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class)->withPivot('url');
+    }
+
+    public function scrapedProducts(): HasMany
+    {
+        return $this->hasMany(ScrapedProduct::class);
     }
 }

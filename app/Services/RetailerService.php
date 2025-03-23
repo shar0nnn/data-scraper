@@ -72,6 +72,10 @@ class RetailerService
             DB::beginTransaction();
             $link = $retailer->logo->link;
             $retailer->logo()->delete();
+            $retailer->scrapedProducts->each(function ($scrapedProduct) {
+                $scrapedProduct->scrapedImages()->delete();
+            });
+            $retailer->scrapedProducts()->delete();
             $retailer->products()->detach();
             $retailer->delete();
             DB::commit();
