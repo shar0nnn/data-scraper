@@ -45,47 +45,4 @@ class ScrapedProductFilter extends QueryFilters
     {
         $this->builder->whereDate('created_at', '<=', $term);
     }
-
-//    public function retailer_ids($term)
-//    {
-//        if ($term) {
-//            $retailers = explode(',', $term);
-//
-//            return $this->builder->whereIn('retailer_id', $retailers);
-//        }
-//    }
-//
-//    public function product_ids($term)
-//    {
-//        if ($term) {
-//            $products = explode(',', $term);
-//
-//            return $this->builder->whereIn('product_id', $products);
-//        }
-//    }
-//
-//    public function manufacturer_part_numbers($term)
-//    {
-//        if ($term) {
-//            $manufacturerPartNumbers = explode(',', $term);
-//
-//            return $this->builder->whereHas('product', function ($query) use ($manufacturerPartNumbers) {
-//                return $query->whereIn('manufacturer_part_number', $manufacturerPartNumbers);
-//            });
-//        }
-//    }
-//
-//    public function start_date($term)
-//    {
-//        if ($term) {
-//            return $this->builder->whereDate('created_at', '>=', $term);
-//        }
-//    }
-//
-//    public function end_date($term)
-//    {
-//        if ($term) {
-//            return $this->builder->whereDate('created_at', '<=', $term);
-//        }
-//    }
 }
