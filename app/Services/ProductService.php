@@ -31,8 +31,6 @@ class ProductService
                     collect($data['retailers'])->mapWithKeys(function ($retailer) {
                         return [$retailer['id'] => [
                             'url' => $retailer['url'],
-                            'updated_at' => now(),
-                            'created_at' => now(),
                         ]];
                     })
                 );
@@ -84,8 +82,6 @@ class ProductService
                     collect($data['retailers'])->mapWithKeys(function ($retailer) {
                         return [$retailer['id'] => [
                             'url' => $retailer['url'],
-                            'updated_at' => now(),
-                            'created_at' => now(),
                         ]];
                     })
                 );

@@ -30,7 +30,7 @@ class Product extends Model
 
     public function retailers(): BelongsToMany
     {
-        return $this->belongsToMany(Retailer::class)->withPivot('url');
+        return $this->belongsToMany(Retailer::class)->withPivot('url')->withTimestamps();
     }
 
     public function scrapedProducts(): HasMany
