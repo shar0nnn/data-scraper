@@ -13,44 +13,47 @@ class CurrencyController extends Controller
 {
     public function index(): JsonResponse
     {
-        return response()->json(['data' => CurrencyResource::collection(Currency::all())]);
+        return $this->jsonResponse(
+            'List of currencies',
+            CurrencyResource::collection(Currency::all())
+        );
     }
 
     public function store(StoreCurrencyRequest $request): JsonResponse
     {
-        return response()->json([
-            'message' => 'Currency created successfully.',
-            'data' => new CurrencyResource(Currency::query()->create($request->validated())),
-        ]);
+        return $this->jsonResponse(
+            'Currency created successfully.',
+            new CurrencyResource(Currency::query()->create($request->validated()))
+        );
     }
 
     public function update(UpdateCurrencyRequest $request, string $id): JsonResponse
     {
         $currency = Currency::query()->find($id);
         if (!$currency) {
-            return response()->json(['message' => 'Currency not found.'], 404);
+            return $this->jsonResponse('Currency not found.', status: 404);
         }
 
         $currency->update($request->validated());
 
-        return response()->json([
-            'message' => 'Currency updated successfully.',
-            'data' => new CurrencyResource($currency),
-        ]);
+        return $this->jsonResponse(
+            'Currency updated successfully.',
+            new CurrencyResource($currency)
+        );
     }
 
     public function destroy(string $id): JsonResponse
     {
         $currency = Currency::query()->find($id);
         if (!$currency) {
-            return response()->json(['message' => 'Currency not found.'], 404);
+            return $this->jsonResponse('Currency not found.', status: 404);
         }
 
         if ($currency->retailers()->exists()) {
-            return response()->json(['message' => 'You can not delete a used currency.']);
+            return $this->jsonResponse('You can not delete a used currency.', status: 403);
         }
         $currency->delete();
 
-        return response()->json(['message' => 'Currency deleted successfully.']);
+        return $this->jsonResponse('Currency deleted successfully.');
     }
 }

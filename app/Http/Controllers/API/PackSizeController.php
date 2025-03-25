@@ -11,7 +11,7 @@ class PackSizeController extends Controller
 {
     public function index(): JsonResponse
     {
-        return response()->json(['data' => PackSize::all()]);
+        return $this->jsonResponse('List of pack sizes', PackSize::all());
     }
 
     public function store(Request $request): JsonResponse
@@ -20,10 +20,10 @@ class PackSizeController extends Controller
             'name' => ['required', 'string', 'max:255'],
         ]);
 
-        return response()->json([
-            'message' => 'Pack size created successfully.',
-            'data' => PackSize::query()->create($validatedData),
-        ]);
+        return $this->jsonResponse(
+            'Pack size created successfully.',
+            PackSize::query()->create($validatedData),
+        );
     }
 
     public function update(Request $request, string $id): JsonResponse
@@ -34,29 +34,29 @@ class PackSizeController extends Controller
 
         $packSize = PackSize::query()->find($id);
         if (!$packSize) {
-            return response()->json(['message' => 'Pack size not found.'], 404);
+            return $this->jsonResponse('Pack size not found.', status: 404);
         }
 
         $packSize->update($validatedData);
 
-        return response()->json([
-            'message' => 'Pack size updated successfully.',
-            'data' => $packSize,
-        ]);
+        return $this->jsonResponse(
+            'Pack size updated successfully.',
+            $packSize,
+        );
     }
 
     public function destroy(string $id): JsonResponse
     {
         $packSize = PackSize::query()->find($id);
         if (!$packSize) {
-            return response()->json(['message' => 'Pack size not found.'], 404);
+            return $this->jsonResponse('Pack size not found.', status: 404);
         }
 
         if ($packSize->products()->exists()) {
-            return response()->json(['message' => 'You can not delete a used pack size.']);
+            return $this->jsonResponse('You can not delete a used pack size.', status: 403);
         }
         $packSize->delete();
 
-        return response()->json(['message' => 'Pack size deleted successfully.']);
+        return $this->jsonResponse('Pack size deleted successfully.');
     }
 }

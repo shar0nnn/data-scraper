@@ -11,7 +11,6 @@ use App\Models\Retailer;
 use App\Models\ScrapedProduct;
 use App\Services\RetailerService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class RetailerController extends Controller
 {
@@ -21,9 +20,12 @@ class RetailerController extends Controller
     {
     }
 
-    public function index(): AnonymousResourceCollection
+    public function index(): JsonResponse
     {
-        return RetailerResource::collection(Retailer::all());
+        return $this->jsonResponse(
+            'List of retailers',
+            RetailerResource::collection(Retailer::all())
+        );
     }
 
     public function store(StoreRetailerRequest $request): JsonResponse
@@ -31,45 +33,45 @@ class RetailerController extends Controller
         $retailer = $this->retailerService->store($request->validated());
 
         if (!$retailer) {
-            return response()->json(['message' => "Error while creating retailer."], 503);
+            return $this->jsonResponse('Error while creating retailer.', status: 503);
         }
 
-        return response()->json([
-            'message' => 'Retailer created successfully.',
-            'data' => new RetailerResource($retailer),
-        ]);
+        return $this->jsonResponse(
+            'Retailer created successfully.',
+            new RetailerResource($retailer),
+        );
     }
 
     public function update(UpdateRetailerRequest $request, string $id): JsonResponse
     {
         $retailer = Retailer::query()->find($id);
         if (!$retailer) {
-            return response()->json(['message' => 'Retailer not found.'], 404);
+            return $this->jsonResponse('Retailer not found.', status: 404);
         }
 
         $retailer = $this->retailerService->update($request->validated(), $retailer);
         if (!$retailer) {
-            return response()->json(['message' => 'Error while updating retailer.'], 503);
+            return $this->jsonResponse('Error while updating retailer.', status: 503);
         }
 
-        return response()->json([
-            'message' => 'Retailer updated successfully.',
-            'data' => new RetailerResource($retailer->refresh()),
-        ]);
+        return $this->jsonResponse(
+            'Retailer updated successfully.',
+            new RetailerResource($retailer->refresh()),
+        );
     }
 
     public function destroy(string $id): JsonResponse
     {
         $retailer = Retailer::query()->find($id);
         if (!$retailer) {
-            return response()->json(['message' => 'Retailer not found.'], 404);
+            return $this->jsonResponse('Retailer not found.', status: 404);
         }
 
         if (!$this->retailerService->destroy($retailer)) {
-            return response()->json(['message' => 'Error while deleting retailer.'], 503);
+            return $this->jsonResponse('Error while deleting retailer.', status: 503);
         }
 
-        return response()->json(['message' => 'Retailer deleted successfully.']);
+        return $this->jsonResponse('Retailer deleted successfully.');
     }
 
     public function metrics(ScrapedProductFilter $scrapedProductFilter): JsonResponse
@@ -99,6 +101,6 @@ class RetailerController extends Controller
             return $element;
         });
 
-        return response()->json(['data' => $data]);
+        return $this->jsonResponse(data: $data);
     }
 }

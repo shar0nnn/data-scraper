@@ -13,12 +13,12 @@ class ScrapedProductController extends Controller
     {
         $scrapedProduct = $scrapedProductService->store($request->validated());
         if (!$scrapedProduct) {
-            return response()->json(['message' => 'Error while storing scraped product.']);
+            return response()->json($this->payload('Error while storing scraped product.'));
         }
 
-        return response()->json([
-            'message' => 'Scraped product stored successfully.',
-            'data' => $scrapedProduct,
-        ]);
+        return response()->json($this->payload(
+            'Scraped product stored successfully.',
+            $scrapedProduct,
+        ));
     }
 }
