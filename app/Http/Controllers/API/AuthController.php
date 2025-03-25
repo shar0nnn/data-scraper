@@ -17,7 +17,7 @@ class AuthController extends Controller
         }
         $user = User::query()->where('email', $request->email)->first();
 
-        if ($user->email === 'parser@gmail.com') {
+        if ($user->email === config('settings.parser.email')) {
             return response()->json([
                 'message' => 'Logged in successfully as parser.',
                 'token' => $user->createToken('parsing', ['scrapedProduct:store'])->plainTextToken,

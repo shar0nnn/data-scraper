@@ -18,10 +18,10 @@ class UserSeeder extends Seeder
             ]);
         }
 
-        if (!User::query()->where('email', 'parser@gmail.com')->exists()) {
+        if (!User::query()->where('email', config('settings.parser.email'))->exists()) {
             User::factory()->create([
                 'name' => 'Parser',
-                'email' => 'parser@gmail.com',
+                'email' => config('settings.parser.email'),
                 'password' => 'parser123'
             ]);
         }
