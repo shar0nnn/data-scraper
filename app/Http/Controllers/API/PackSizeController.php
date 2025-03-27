@@ -29,7 +29,7 @@ class PackSizeController extends Controller
     public function update(Request $request, string $id): JsonResponse
     {
         $validatedData = $request->validate([
-            'name' => ['nullable', 'string', 'max:255'],
+            'name' => ['string', 'max:255'],
         ]);
 
         $packSize = PackSize::query()->find($id);
