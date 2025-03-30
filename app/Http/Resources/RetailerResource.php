@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class RetailerResource extends JsonResource
 {
@@ -18,8 +19,8 @@ class RetailerResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'url' => $this->url,
-            'currency' => new CurrencyResource($this->currency),
-            'logo' => $this->logo->link,
+            'currency' => $this->currency->code,
+            'logo' => Storage::disk('public')->url($this->logo->link),
         ];
     }
 }

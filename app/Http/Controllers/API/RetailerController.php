@@ -24,7 +24,7 @@ class RetailerController extends Controller
     {
         return $this->jsonResponse(
             'List of retailers',
-            RetailerResource::collection(Retailer::all())
+            RetailerResource::collection(Retailer::with(['logo', 'currency'])->get())
         );
     }
 

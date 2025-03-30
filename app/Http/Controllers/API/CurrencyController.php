@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Currency\StoreCurrencyRequest;
-use App\Http\Requests\Currency\UpdateCurrencyRequest;
+use App\Http\Requests\Currency\CurrencyRequest;
 use App\Http\Resources\CurrencyResource;
 use App\Models\Currency;
 use Illuminate\Http\JsonResponse;
@@ -19,7 +18,7 @@ class CurrencyController extends Controller
         );
     }
 
-    public function store(StoreCurrencyRequest $request): JsonResponse
+    public function store(CurrencyRequest $request): JsonResponse
     {
         return $this->jsonResponse(
             'Currency created successfully.',
@@ -27,7 +26,7 @@ class CurrencyController extends Controller
         );
     }
 
-    public function update(UpdateCurrencyRequest $request, string $id): JsonResponse
+    public function update(CurrencyRequest $request, string $id): JsonResponse
     {
         $currency = Currency::query()->find($id);
         if (!$currency) {

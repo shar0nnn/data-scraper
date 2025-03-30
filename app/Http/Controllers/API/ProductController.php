@@ -21,7 +21,7 @@ class ProductController extends Controller
 
     public function index(): AnonymousResourceCollection
     {
-        return ProductResource::collection(Product::with(['images', 'packSize'])->paginate());
+        return ProductResource::collection(Product::with(['images', 'packSize'])->paginate(10));
     }
 
     public function store(StoreProductRequest $request): JsonResponse
