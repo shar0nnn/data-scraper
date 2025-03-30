@@ -4,6 +4,7 @@ return [
     'Logged in successfully.' => 'Logged in successfully.',
     'Logged in successfully as parser.' => 'Logged in successfully as parser.',
     'Wrong email or password.' => 'Wrong email or password.',
+    'Logged out successfully.' => 'Logged out successfully.',
 
     'List of currencies' => 'List of currencies',
     'Currency created successfully.' => 'Currency created successfully.',
