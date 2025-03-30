@@ -12,6 +12,7 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('guest')->na
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/auth-check', fn() => response()->noContent());
 
     Route::middleware('ability:server:crud')->group(function () {
         Route::apiResource('retailers', RetailerController::class)->except('show');
