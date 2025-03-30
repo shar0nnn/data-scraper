@@ -5,8 +5,10 @@ namespace App\Http\Requests\Currency;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCurrencyRequest extends FormRequest
+class CurrencyRequest extends FormRequest
 {
+    protected $stopOnFirstFailure = true;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,7 +25,7 @@ class UpdateCurrencyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => ['nullable', 'string', 'max:3'],
+            'code' => ['required', 'string', 'max:3'],
             'description' => ['nullable', 'string', 'max:255'],
             'symbol' => ['nullable', 'string', 'max:5'],
         ];

@@ -23,7 +23,7 @@ class UpdateRetailerRequest extends RetailerRequest
     public function rules(): array
     {
         return parent::rules() + [
-                'logo' => ['nullable', File::image()->types(['jpeg', 'jpg', 'png', 'webp'])->max(5 * 1024)],
+                'logo' => ['nullable', 'mimes:jpeg,jpg,png,webp,svg', 'max:5120'],
             ];
     }
 }

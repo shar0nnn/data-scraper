@@ -23,7 +23,7 @@ class StoreRetailerRequest extends RetailerRequest
     public function rules(): array
     {
         return parent::rules() + [
-                'logo' => ['required', File::image()->types(['jpeg', 'jpg', 'png', 'webp'])->max(5 * 1024)],
+                'logo' => ['required', 'mimes:jpeg,jpg,png,webp,svg', 'max:5120'],
             ];
     }
 }
