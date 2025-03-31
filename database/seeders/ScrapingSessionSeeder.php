@@ -12,12 +12,16 @@ class ScrapingSessionSeeder extends MainSeeder
 {
     public function run(): void
     {
-        for ($i = 0; $i < 3650; $i++) {
-            $scrapingSessions[] = [
-                'status' => $this->faker->words(asText: true),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+        $scrapingSessions = [];
+        $countRetailers = Retailer::query()->count();
+        for ($i = 0; $i < 365; $i++) {
+            for ($j = 0; $j < $countRetailers; $j++) {
+                $scrapingSessions[] = [
+                    'status' => $this->faker->words(asText: true),
+                    'created_at' => now()->subDays($i),
+                    'updated_at' => now(),
+                ];
+            }
         }
 
         ScrapingSession::query()->insert($scrapingSessions);
