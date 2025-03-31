@@ -37,6 +37,11 @@ class ScrapedProduct extends Model
         return $this->hasMany(ScrapedImage::class);
     }
 
+    public function scrapingSession(): BelongsTo
+    {
+        return $this->belongsTo(ScrapingSession::class);
+    }
+
     public function averageRating(): float
     {
         $rating = $this->rating;

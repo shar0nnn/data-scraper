@@ -19,30 +19,37 @@ class ScrapedProductFilter extends QueryFilters
         return array_filter(explode(',', $values));
     }
 
-    public function retailer_ids($term): void
+    private function whereDateRelation(string $relation, string $column, string $operator, string $value): void
     {
-        $this->builder->whereIn('retailer_id', $this->explodeValues($term));
-    }
-
-    public function product_ids($term): void
-    {
-        $this->builder->whereIn('product_id', $this->explodeValues($term));
-    }
-
-    public function manufacturer_part_numbers($term): void
-    {
-        $this->builder->whereHas('product', function ($query) use ($term) {
-            $query->whereIn('manufacturer_part_number', $this->explodeValues($term));
+        $this->builder->whereHas($relation, function ($query) use ($column, $operator, $value) {
+            $query->whereDate($column, $operator, $value);
         });
     }
 
-    public function start_date($term): void
+    public function retailer_ids($value): void
     {
-        $this->builder->whereDate('created_at', '>=', $term);
+        $this->builder->whereIn('retailer_id', $this->explodeValues($value));
     }
 
-    public function end_date($term): void
+    public function product_ids($value): void
     {
-        $this->builder->whereDate('created_at', '<=', $term);
+        $this->builder->whereIn('product_id', $this->explodeValues($value));
+    }
+
+    public function manufacturer_part_numbers($value): void
+    {
+        $this->builder->whereHas('product', function ($query) use ($value) {
+            $query->whereIn('manufacturer_part_number', $this->explodeValues($value));
+        });
+    }
+
+    public function start_date($value): void
+    {
+        $this->whereDateRelation('scrapingSession', 'created_at', '>=', $value);
+    }
+
+    public function end_date($value): void
+    {
+        $this->whereDateRelation('scrapingSession', 'created_at', '<=', $value);
     }
 }
