@@ -10,6 +10,8 @@ class QueryFilters
     protected Request $request;
     protected Builder $builder;
 
+    public array $appliedFilters = [];
+
     public function __construct(Request $request)
     {
         $this->request = $request;
@@ -22,6 +24,8 @@ class QueryFilters
             if (!method_exists($this, $name) || empty($value)) {
                 continue;
             }
+
+            $this->appliedFilters[$name] = $value;
             if (strlen($value)) {
                 $this->$name($value);
             } else {

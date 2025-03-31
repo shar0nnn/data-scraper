@@ -77,7 +77,8 @@ class RetailerController extends Controller
     public function metrics(ScrapedProductFilter $scrapedProductFilter): JsonResponse
     {
         $data = ScrapedProduct::query()
-            ->selectRaw('retailer_id, round(avg(price), 2) as average_price')
+            ->selectRaw('retailer_id, retailers.title as retailer_title, round(avg(price), 2) as average_price')
+            ->join('retailers', 'scraped_products.retailer_id', '=', 'retailers.id')
             ->filter($scrapedProductFilter)
             ->groupBy('retailer_id')
             ->get();
@@ -90,17 +91,26 @@ class RetailerController extends Controller
                 ->get();
 
             $totalNumberOfImages = $scrapedProducts->sum('scraped_images_count');
-            $element->average_number_of_images = round($totalNumberOfImages / $scrapedProducts->count(), 2);
+            $element->average_number_of_images = $scrapedProducts->count() > 0
+                ? round($totalNumberOfImages / $scrapedProducts->count(), 2)
+                : 0;
 
             $totalVotes = $scrapedProducts->sum(fn($element) => array_sum($element->rating));
             $totalScore = $scrapedProducts->sum(fn($element) => array_sum(
                 array_map(fn($stars, $votes) => $stars * $votes, array_keys($element->rating), $element->rating)
             ));
-            $element->average_rating = $totalVotes > 0 ? round($totalScore / $totalVotes, 2) : 0;
+            $element->average_rating = $totalVotes > 0
+                ? round($totalScore / $totalVotes, 2)
+                : 0;
 
             return $element;
         });
 
-        return $this->jsonResponse(data: $data);
+        return $this->jsonResponse(
+            data: $data,
+            meta: [
+                'applied_filters' => $scrapedProductFilter->appliedFilters,
+            ]
+        );
     }
 }
