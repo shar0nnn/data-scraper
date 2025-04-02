@@ -2,13 +2,16 @@
 
 namespace App\Filters;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 
 class QueryFilters
 {
     protected Request $request;
-    protected Builder $builder;
+
+    protected EloquentBuilder $eloquentBuilder;
+    protected QueryBuilder $queryBuilder;
 
     public array $appliedFilters = [];
 
@@ -17,9 +20,16 @@ class QueryFilters
         $this->request = $request;
     }
 
-    public function apply(Builder $builder): Builder
+    public function apply(QueryBuilder|EloquentBuilder $builder): EloquentBuilder|QueryBuilder
     {
-        $this->builder = $builder;
+        if ($builder instanceof EloquentBuilder) {
+            $this->eloquentBuilder = $builder;
+        }
+
+        if ($builder instanceof QueryBuilder) {
+            $this->queryBuilder = $builder;
+        }
+
         foreach ($this->filters() as $name => $value) {
             if (!method_exists($this, $name) || empty($value)) {
                 continue;
@@ -33,10 +43,10 @@ class QueryFilters
             }
         }
 
-        return $this->builder;
+        return $this->eloquentBuilder ?? $this->queryBuilder;
     }
 
-    public function filters(): array
+    private function filters(): array
     {
         return $this->request->all();
     }

@@ -19,37 +19,34 @@ class ScrapedProductFilter extends QueryFilters
         return array_filter(explode(',', $values));
     }
 
-    private function whereDateRelation(string $relation, string $column, string $operator, string $value): void
-    {
-        $this->builder->whereHas($relation, function ($query) use ($column, $operator, $value) {
-            $query->whereDate($column, $operator, $value);
-        });
-    }
-
     public function retailer_ids($value): void
     {
-        $this->builder->whereIn('retailer_id', $this->explodeValues($value));
+        $this->queryBuilder->whereIn('retailer_id', $this->explodeValues($value));
     }
 
     public function product_ids($value): void
     {
-        $this->builder->whereIn('product_id', $this->explodeValues($value));
+        $this->queryBuilder->whereIn('product_id', $this->explodeValues($value));
     }
 
     public function manufacturer_part_numbers($value): void
     {
-        $this->builder->whereHas('product', function ($query) use ($value) {
-            $query->whereIn('manufacturer_part_number', $this->explodeValues($value));
-        });
+        $this->queryBuilder
+            ->join('products', 'product_id', '=', 'products.id')
+            ->whereIn('manufacturer_part_number', $this->explodeValues($value));
     }
 
     public function start_date($value): void
     {
-        $this->whereDateRelation('scrapingSession', 'created_at', '>=', $value);
+        $this->queryBuilder
+            ->join('scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
+            ->whereDate('scraping_sessions.created_at', '>=', $value);
     }
 
     public function end_date($value): void
     {
-        $this->whereDateRelation('scrapingSession', 'created_at', '<=', $value);
+        $this->queryBuilder
+            ->join('scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
+            ->whereDate('scraping_sessions.created_at', '<=', $value);
     }
 }

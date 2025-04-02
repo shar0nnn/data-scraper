@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ScrapedProduct extends Model
 {
-    use Filterable;
-
     protected $fillable = [
         'product_id',
         'retailer_id',
@@ -40,17 +38,5 @@ class ScrapedProduct extends Model
     public function scrapingSession(): BelongsTo
     {
         return $this->belongsTo(ScrapingSession::class);
-    }
-
-    public function averageRating(): float
-    {
-        $rating = $this->rating;
-        $totalVotes = array_sum($rating);
-        $totalScore = 0;
-        foreach ($rating as $stars => $votes) {
-            $totalScore += $stars * $votes;
-        }
-
-        return $totalVotes > 0 ? round($totalScore / $totalVotes, 2) : 0;
     }
 }

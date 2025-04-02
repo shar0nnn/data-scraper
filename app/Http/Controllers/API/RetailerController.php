@@ -8,9 +8,9 @@ use App\Http\Requests\Retailer\StoreRetailerRequest;
 use App\Http\Requests\Retailer\UpdateRetailerRequest;
 use App\Http\Resources\RetailerResource;
 use App\Models\Retailer;
-use App\Models\ScrapedProduct;
 use App\Services\RetailerService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class RetailerController extends Controller
 {
@@ -76,35 +76,56 @@ class RetailerController extends Controller
 
     public function metrics(ScrapedProductFilter $scrapedProductFilter): JsonResponse
     {
-        $data = ScrapedProduct::query()
-            ->selectRaw('retailer_id, retailers.title as retailer_title, round(avg(price), 2) as average_price')
+        $queryBuilder = DB::table('scraped_products')
+            ->selectRaw('
+        retailer_id,
+        retailers.title as retailer_title,
+        ROUND(AVG(price), 2) as average_price,
+        ROUND(
+            SUM(
+                (
+                    (CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) * 1) +
+                    (CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) * 2) +
+                    (CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) * 3) +
+                    (CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) * 4) +
+                    (CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2)) * 5)
+                ) /
+                NULLIF(
+                    CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2)), 0
+                ) *
+                (
+                    CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2))
+                )
+            )
+            /
+            NULLIF(
+                SUM(
+                    CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2))
+                ), 0
+            ), 2
+        ) as average_rating,
+        ROUND(AVG(count_images_table.scraped_product_average_number_of_images), 1) as average_number_of_images')
             ->join('retailers', 'scraped_products.retailer_id', '=', 'retailers.id')
-            ->filter($scrapedProductFilter)
-            ->groupBy('retailer_id')
-            ->get();
+            ->leftJoin(DB::raw('(
+        SELECT scraped_product_id, COUNT(id) AS scraped_product_average_number_of_images
+        FROM scraped_images
+        GROUP BY scraped_product_id
+        ) AS count_images_table'), 'scraped_products.id', '=', 'count_images_table.scraped_product_id')
+            ->groupBy('retailer_id');
 
-        $data = $data->map(function ($element) use ($scrapedProductFilter) {
-            $scrapedProducts = ScrapedProduct::query()
-                ->filter($scrapedProductFilter)
-                ->where('retailer_id', $element->retailer_id)
-                ->withCount('scrapedImages')
-                ->get();
-
-            $totalNumberOfImages = $scrapedProducts->sum('scraped_images_count');
-            $element->average_number_of_images = $scrapedProducts->count() > 0
-                ? round($totalNumberOfImages / $scrapedProducts->count(), 2)
-                : 0;
-
-            $totalVotes = $scrapedProducts->sum(fn($element) => array_sum($element->rating));
-            $totalScore = $scrapedProducts->sum(fn($element) => array_sum(
-                array_map(fn($stars, $votes) => $stars * $votes, array_keys($element->rating), $element->rating)
-            ));
-            $element->average_rating = $totalVotes > 0
-                ? round($totalScore / $totalVotes, 2)
-                : 0;
-
-            return $element;
-        });
+        $data = $scrapedProductFilter->apply($queryBuilder)->get();
 
         return $this->jsonResponse(
             data: $data,
