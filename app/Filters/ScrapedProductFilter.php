@@ -6,11 +6,8 @@ use Illuminate\Http\Request;
 
 class ScrapedProductFilter extends QueryFilters
 {
-    protected Request $request;
-
-    public function __construct(Request $request)
+    public function __construct(protected Request $request)
     {
-        $this->request = $request;
         parent::__construct($request);
     }
 

@@ -8,16 +8,13 @@ use Illuminate\Http\Request;
 
 class QueryFilters
 {
-    protected Request $request;
-
     protected EloquentBuilder $eloquentBuilder;
     protected QueryBuilder $queryBuilder;
 
     public array $appliedFilters = [];
 
-    public function __construct(Request $request)
+    public function __construct(protected Request $request)
     {
-        $this->request = $request;
     }
 
     public function apply(QueryBuilder|EloquentBuilder $builder): EloquentBuilder|QueryBuilder

@@ -20,7 +20,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'manufacturer_part_number' => $this->manufacturer_part_number,
             'pack_size' => $this->packSize->name,
-            'images' => ImageResource::collection($this->images)
+//            'images' => ImageResource::collection($this->images)
         ];
     }
 }

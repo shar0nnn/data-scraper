@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Filters\ScrapedProductFilter;
 use App\Models\Retailer;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -89,5 +91,59 @@ class RetailerService
 
             return false;
         }
+    }
+
+    public function metrics(ScrapedProductFilter $scrapedProductFilter): Collection
+    {
+        $queryBuilder = DB::table('scraped_products')
+            ->selectRaw('
+        retailer_id,
+        retailers.title as retailer_title,
+        ROUND(AVG(price), 2) as average_price,
+        ROUND(
+            SUM(
+                (
+                    (CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) * 1) +
+                    (CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) * 2) +
+                    (CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) * 3) +
+                    (CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) * 4) +
+                    (CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2)) * 5)
+                ) /
+                NULLIF(
+                    CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2)), 0
+                ) *
+                (
+                    CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2))
+                )
+            )
+            /
+            NULLIF(
+                SUM(
+                    CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) +
+                    CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2))
+                ), 0
+            ), 2
+        ) as average_rating,
+        ROUND(AVG(count_images_table.scraped_product_average_number_of_images), 1) as average_number_of_images')
+            ->join('retailers', 'scraped_products.retailer_id', '=', 'retailers.id')
+            ->leftJoin(DB::raw('(
+        SELECT scraped_product_id, COUNT(id) AS scraped_product_average_number_of_images
+        FROM scraped_images
+        GROUP BY scraped_product_id
+        ) AS count_images_table'), 'scraped_products.id', '=', 'count_images_table.scraped_product_id')
+            ->groupBy('retailer_id');
+
+        return $scrapedProductFilter->apply($queryBuilder)->get();
     }
 }

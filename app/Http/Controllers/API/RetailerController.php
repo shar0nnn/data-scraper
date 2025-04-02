@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exports\RetailersMetricsExport;
 use App\Filters\ScrapedProductFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Retailer\StoreRetailerRequest;
@@ -10,7 +11,9 @@ use App\Http\Resources\RetailerResource;
 use App\Models\Retailer;
 use App\Services\RetailerService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class RetailerController extends Controller
 {
@@ -76,62 +79,18 @@ class RetailerController extends Controller
 
     public function metrics(ScrapedProductFilter $scrapedProductFilter): JsonResponse
     {
-        $queryBuilder = DB::table('scraped_products')
-            ->selectRaw('
-        retailer_id,
-        retailers.title as retailer_title,
-        ROUND(AVG(price), 2) as average_price,
-        ROUND(
-            SUM(
-                (
-                    (CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) * 1) +
-                    (CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) * 2) +
-                    (CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) * 3) +
-                    (CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) * 4) +
-                    (CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2)) * 5)
-                ) /
-                NULLIF(
-                    CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2)), 0
-                ) *
-                (
-                    CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2))
-                )
-            )
-            /
-            NULLIF(
-                SUM(
-                    CAST(JSON_EXTRACT(rating, "$.\"1\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"2\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"3\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"4\"") AS DECIMAL(10,2)) +
-                    CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2))
-                ), 0
-            ), 2
-        ) as average_rating,
-        ROUND(AVG(count_images_table.scraped_product_average_number_of_images), 1) as average_number_of_images')
-            ->join('retailers', 'scraped_products.retailer_id', '=', 'retailers.id')
-            ->leftJoin(DB::raw('(
-        SELECT scraped_product_id, COUNT(id) AS scraped_product_average_number_of_images
-        FROM scraped_images
-        GROUP BY scraped_product_id
-        ) AS count_images_table'), 'scraped_products.id', '=', 'count_images_table.scraped_product_id')
-            ->groupBy('retailer_id');
-
-        $data = $scrapedProductFilter->apply($queryBuilder)->get();
-
         return $this->jsonResponse(
-            data: $data,
+            data: $this->retailerService->metrics($scrapedProductFilter),
             meta: [
                 'applied_filters' => $scrapedProductFilter->appliedFilters,
             ]
+        );
+    }
+
+    public function exportMetrics(ScrapedProductFilter $scrapedProductFilter): BinaryFileResponse
+    {
+        return FacadeExcel::download(
+            new RetailersMetricsExport($scrapedProductFilter), 'retailers-metrics.xlsx', Excel::XLSX
         );
     }
 }

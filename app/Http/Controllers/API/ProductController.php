@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Exports\ProductsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
@@ -10,6 +11,9 @@ use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
+use Maatwebsite\Excel\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProductController extends Controller
 {
@@ -68,5 +72,10 @@ class ProductController extends Controller
         }
 
         return $this->jsonResponse('Product deleted successfully.');
+    }
+
+    public function export(): BinaryFileResponse
+    {
+        return FacadeExcel::download(new ProductsExport, 'products.xlsx', Excel::XLSX);
     }
 }
