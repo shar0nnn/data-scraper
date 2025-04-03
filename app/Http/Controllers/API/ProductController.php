@@ -4,15 +4,17 @@ namespace App\Http\Controllers\API;
 
 use App\Exports\ProductsExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Product\ImportProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
+use App\Imports\ProductsImport;
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
 use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProductController extends Controller
@@ -72,6 +74,23 @@ class ProductController extends Controller
         }
 
         return $this->jsonResponse('Product deleted successfully.');
+    }
+
+    public function import(ImportProductRequest $request): JsonResponse
+    {
+        $productsImport = new ProductsImport;
+        if (!FacadeExcel::import($productsImport, $request->validated('file'))) {
+            return $this->jsonResponse('Error while importing products.', status: 503);
+        }
+
+        return response()->json([
+            'message' => __('messages.Products imported successfully.', ['number' => $productsImport->getDBRows()]),
+            'meta' => [
+                'file_rows' => $productsImport->getFileRows(),
+                'memory_usage' => $productsImport->getMemoryUsage(),
+                'execution_time' => $productsImport->getExecutionTime(),
+            ]
+        ]);
     }
 
     public function export(): BinaryFileResponse
