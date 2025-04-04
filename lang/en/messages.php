@@ -52,7 +52,7 @@ return [
     // Validation Error Messages
     'The file type must be XLS or XLSX.' => 'The file type must be XLS or XLSX.',
     'The file is required.' => 'The file is required.',
-    'The field is required.' => 'The :field is required.',
-    'The field must be a string.' => 'The :field must be a string.',
-    'The field is too long.' => 'The :field is too long, maximum :max characters.',
+    'The field is required.' => 'The :field is required (row: :row)',
+    'The field must be a string.' => 'The :field must be a string (row: :row).',
+    'The field is too long.' => 'The :field is too long (maximum :max characters, row :row).',
 ];
