@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-trait WithExecutionStats
+trait HasExecutionStats
 {
     private int $fileRows = 0;
     private int $dbRows = 0;
