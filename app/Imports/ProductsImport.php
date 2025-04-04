@@ -4,7 +4,7 @@ namespace App\Imports;
 
 use App\Models\PackSize;
 use App\Models\Product;
-use App\Traits\HasExecutionStats;
+use App\Traits\HasImportStats;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 
 class ProductsImport implements ToModel, WithHeadingRow, WithValidation, WithEvents
 {
-    use RegistersEventListeners, HasExecutionStats;
+    use RegistersEventListeners, HasImportStats;
 
     public function model(array $row): Model|Product|null
     {

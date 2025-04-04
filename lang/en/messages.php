@@ -34,6 +34,7 @@ return [
     'Product deleted successfully.' => 'Product deleted successfully.',
     'Products imported successfully.' => ':number products imported successfully.',
     'Error while importing products.' => 'Error while importing products.',
+    'Products exported successfully.' => 'Products exported successfully.',
 
     // Retailer
     'List of retailers' => 'List of retailers',

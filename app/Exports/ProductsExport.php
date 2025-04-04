@@ -2,26 +2,49 @@
 
 namespace App\Exports;
 
-use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Traits\HasExportStats;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\RegistersEventListeners;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ProductsExport implements FromCollection
+class ProductsExport implements FromQuery, WithHeadings, WithMapping, WithEvents
 {
-//    use Exportable;
-    public function collection(): AnonymousResourceCollection
+    use RegistersEventListeners, Exportable, HasExportStats;
+
+    public string $fileName = 'products.xlsx';
+    protected int $number = 1;
+
+    public function headings(): array
     {
-        return ProductResource::collection(Product::all());
+        return [
+            'number',
+            'title',
+            'description',
+            'manufacturer_part_number',
+            'pack_size'
+        ];
     }
 
-//    public function sheets(): array
-//    {
-//        $sheets = [];
-//        for ($i = 1; $i <= 3; $i++) {
-//            $sheets[] = new ProductSheet($i);
-//        }
-//
-//        return $sheets;
-//    }
+    public function map($product): array
+    {
+        $this->fileRows++;
+
+        return [
+            $this->number++,
+            $product->title,
+            $product->description,
+            $product->manufacturer_part_number,
+            $product->packSize->name,
+        ];
+    }
+
+    public function query(): Relation|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+    {
+        return Product::query();
+    }
 }

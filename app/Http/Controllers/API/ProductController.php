@@ -9,11 +9,13 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Imports\ProductsImport;
+use App\Jobs\DeletePublicFile;
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -100,8 +102,20 @@ class ProductController extends Controller
         ]);
     }
 
-    public function export(): BinaryFileResponse
+    public function export(): JsonResponse
     {
-        return FacadeExcel::download(new ProductsExport, 'products.xlsx', Excel::XLSX);
+        $productsExport = new ProductsExport;
+        $productsExport->store($productsExport->fileName, 'public', Excel::XLSX);
+        DeletePublicFile::dispatch($productsExport->fileName)->delay(now()->addHour());
+
+        return $this->jsonResponse(
+            'Products exported successfully.',
+            Storage::temporaryUrl($productsExport->fileName, now()->addHour()),
+            meta: [
+                'file_rows' => $productsExport->getFileRows(),
+                'memory_usage' => $productsExport->getMemoryUsage(),
+                'execution_time' => $productsExport->getExecutionTime(),
+            ]
+        );
     }
 }

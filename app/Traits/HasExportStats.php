@@ -2,19 +2,18 @@
 
 namespace App\Traits;
 
-trait HasExecutionStats
+trait HasExportStats
 {
     private int $fileRows = 0;
-    private int $dbRows = 0;
     private int $memoryUsage = 0;
     private float $executionTime = 0;
 
-    public function beforeImport(): void
+    public function beforeExport(): void
     {
         $this->executionTime = microtime(true);
     }
 
-    public function afterImport(): void
+    public function afterSheet(): void
     {
         $this->memoryUsage = memory_get_peak_usage();
         $this->executionTime = microtime(true) - $this->executionTime;
@@ -23,11 +22,6 @@ trait HasExecutionStats
     public function getFileRows(): int
     {
         return $this->fileRows;
-    }
-
-    public function getDBRows(): int
-    {
-        return $this->dbRows;
     }
 
     public function getMemoryUsage(): string
