@@ -13,9 +13,11 @@ use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
 use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Throwable;
 
 class ProductController extends Controller
 {
@@ -79,7 +81,12 @@ class ProductController extends Controller
     public function import(ImportProductRequest $request): JsonResponse
     {
         $productsImport = new ProductsImport;
-        if (!FacadeExcel::import($productsImport, $request->validated('file'))) {
+
+        try {
+            FacadeExcel::import($productsImport, $request->validated('file'));
+        } catch (Throwable $throwable) {
+            Log::error($throwable->getMessage());
+
             return $this->jsonResponse('Error while importing products.', status: 503);
         }
 
