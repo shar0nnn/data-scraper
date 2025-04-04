@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('products', ProductController::class)->except('show');
         Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
         Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
+        Route::get('scraped-products/export', [ScrapedProductController::class, 'export'])
+            ->name('scraped-products.export');
 
         Route::apiResource('currencies', CurrencyController::class)->except('show');
 

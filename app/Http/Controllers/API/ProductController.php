@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
 class ProductController extends Controller

@@ -30,6 +30,11 @@ class ScrapedProduct extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function retailer(): BelongsTo
+    {
+        return $this->belongsTo(Retailer::class);
+    }
+
     public function scrapedImages(): HasMany
     {
         return $this->hasMany(ScrapedImage::class);

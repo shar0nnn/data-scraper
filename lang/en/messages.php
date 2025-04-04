@@ -49,6 +49,7 @@ return [
     // Scraped Product
     'Error while storing scraped product.' => 'Error while storing scraped product.',
     'Scraped product stored successfully.' => 'Scraped product stored successfully.',
+    'Scraped products exported successfully.' => 'Scraped products exported successfully.',
 
     // Validation Error Messages
     'The file type must be XLS or XLSX.' => 'The file type must be XLS or XLSX.',
