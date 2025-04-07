@@ -91,14 +91,15 @@ class ProductController extends Controller
             return $this->jsonResponse('Error while importing products.', status: 503);
         }
 
-        return response()->json([
-            'message' => __('messages.Products imported successfully.', ['number' => $productsImport->getDBRows()]),
-            'meta' => [
+        return $this->jsonResponse(
+            'Products imported successfully.',
+            meta: [
                 'file_rows' => $productsImport->getFileRows(),
                 'memory_usage' => $productsImport->getMemoryUsage(),
                 'execution_time' => $productsImport->getExecutionTime(),
-            ]
-        ]);
+            ],
+            messagePlaceholders: ['number' => $productsImport->getDBRows()]
+        );
     }
 
     public function export(): JsonResponse

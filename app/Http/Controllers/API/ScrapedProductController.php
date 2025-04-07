@@ -40,6 +40,7 @@ class ScrapedProductController extends Controller
                 'file_rows' => $scrapedProductExport->getFileRows(),
                 'memory_usage' => $scrapedProductExport->getMemoryUsage(),
                 'execution_time' => $scrapedProductExport->getExecutionTime(),
+                'applied_filters' => $filter->appliedFilters
             ]
         );
     }
