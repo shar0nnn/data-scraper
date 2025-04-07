@@ -79,10 +79,8 @@ class ProductController extends Controller
         return $this->jsonResponse('Product deleted successfully.');
     }
 
-    public function import(ImportProductRequest $request): JsonResponse
+    public function import(ImportProductRequest $request, ProductsImport $productsImport): JsonResponse
     {
-        $productsImport = new ProductsImport;
-
         try {
             FacadeExcel::import($productsImport, $request->validated('file'));
         } catch (Throwable $throwable) {
@@ -102,9 +100,8 @@ class ProductController extends Controller
         );
     }
 
-    public function export(): JsonResponse
+    public function export(ProductsExport $productsExport): JsonResponse
     {
-        $productsExport = new ProductsExport;
         $productsExport->store($productsExport->fileName, 'public', Excel::XLSX);
         DeletePublicFile::dispatch($productsExport->fileName)->delay(now()->addHour());
 
