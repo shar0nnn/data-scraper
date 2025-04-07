@@ -14,6 +14,7 @@ use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
@@ -86,30 +87,30 @@ class ProductController extends Controller
         } catch (Throwable $throwable) {
             Log::error($throwable->getMessage());
 
-            return $this->jsonResponse('Error while importing products.', status: 503);
+            return $this->jsonResponse($throwable->getMessage(), status: Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return $this->jsonResponse(
             'Products imported successfully.',
             meta: [
-                'file_rows' => $productsImport->getFileRows(),
+                'file_rows' => $productsImport->getRowNumber(),
                 'memory_usage' => $productsImport->getMemoryUsage(),
                 'execution_time' => $productsImport->getExecutionTime(),
             ],
-            messagePlaceholders: ['number' => $productsImport->getDBRows()]
+            messagePlaceholders: ['number' => $productsImport->getProductNumber()]
         );
     }
 
     public function export(ProductsExport $productsExport): JsonResponse
     {
-        $productsExport->store($productsExport->fileName, 'public', Excel::XLSX);
-        DeletePublicFile::dispatch($productsExport->fileName)->delay(now()->addHour());
+        $productsExport->store($productsExport->getFileName(), 'public', Excel::XLSX);
+        DeletePublicFile::dispatch($productsExport->getFileName())->delay($productsExport->getDeletionDelay());
 
         return $this->jsonResponse(
             'Products exported successfully.',
-            Storage::temporaryUrl($productsExport->fileName, now()->addHour()),
+            Storage::temporaryUrl($productsExport->getFileName(), $productsExport->getDeletionDelay()),
             meta: [
-                'file_rows' => $productsExport->getFileRows(),
+                'file_rows' => $productsExport->getRowNumber(),
                 'memory_usage' => $productsExport->getMemoryUsage(),
                 'execution_time' => $productsExport->getExecutionTime(),
             ]

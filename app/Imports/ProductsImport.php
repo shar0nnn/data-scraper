@@ -4,23 +4,32 @@ namespace App\Imports;
 
 use App\Models\PackSize;
 use App\Models\Product;
-use App\Traits\HasImportStats;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Maatwebsite\Excel\Concerns\RegistersEventListeners;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithEvents;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Concerns\OnEachRow;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Row;
 
-class ProductsImport implements ToModel, WithHeadingRow, WithValidation, WithEvents
+class ProductsImport extends SpreadsheetImport implements WithHeadingRow, SkipsEmptyRows, OnEachRow
 {
-    use RegistersEventListeners, HasImportStats;
-
-    public function model(array $row): Model|Product|null
+    public function __construct()
     {
-        $this->fileRows++;
+        parent::__construct();
+        $this->skipRows = 1;
+        $this->rowNumber = $this->skipRows;
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function onRow(Row $row): void
+    {
+        $this->rowNumber++;
+        $row = $row->toArray();
+
+        $this->validateRow($row);
+
         $packSize = PackSize::query()->where('name', $row['pack_size'])->pluck('id')->first();
         if (!$packSize) {
             $packSize = PackSize::query()->create(
@@ -28,29 +37,29 @@ class ProductsImport implements ToModel, WithHeadingRow, WithValidation, WithEve
             )->id;
         }
 
-        $validator = Validator::make([
-            'manufacturer_part_number' => $row['manufacturer_part_number'],
-        ], [
-            'manufacturer_part_number' => Rule::unique('products')->where(function ($query) use ($packSize) {
-                return $query->where('pack_size_id', $packSize);
-            })
-        ]);
-
-        if ($validator->fails()) {
-            return null;
-        }
-
-        $this->dbRows++;
-
-        return new Product([
-            'title' => $row['title'],
-            'description' => $row['description'],
-            'manufacturer_part_number' => $row['manufacturer_part_number'],
-            'pack_size_id' => $packSize,
-        ]);
+        Product::query()->updateOrCreate(
+            [
+                'manufacturer_part_number' => $row['manufacturer_part_number'],
+                'pack_size_id' => $packSize
+            ],
+            [
+                'title' => $row['title'],
+                'description' => $row['description'],
+                'manufacturer_part_number' => $row['manufacturer_part_number'],
+                'pack_size_id' => $packSize,
+            ]
+        );
     }
 
-    public function rules(): array
+    /**
+     * @throws ValidationException
+     */
+    private function validateRow($row): void
+    {
+        Validator::make($row, $this->rules(), $this->messages())->stopOnFirstFailure()->validate();
+    }
+
+    private function rules(): array
     {
         return [
             'title' => ['required', 'string', 'max:255'],
@@ -60,18 +69,23 @@ class ProductsImport implements ToModel, WithHeadingRow, WithValidation, WithEve
         ];
     }
 
-    public function customValidationMessages(): array
+    private function messages(): array
     {
         return [
-            'title.required' => __('messages.The field is required.', ['field' => 'title', 'row' => $this->fileRows + 2]),
-            'title.string' => __('messages.The field must be a string.', ['field' => 'title', 'row' => $this->fileRows + 2]),
-            'title.max' => __('messages.The field is too long.', ['max' => 255, 'field' => 'title', 'row' => $this->fileRows + 2]),
-            'description.string' => __('messages.The field must be a string.', ['field' => 'description', 'row' => $this->fileRows + 2]),
-            'manufacturer_part_number.required' => __('messages.The field is required.', ['field' => 'manufacturer part number', 'row' => $this->fileRows + 2]),
-            'manufacturer_part_number.max' => __('messages.The field is too long.', ['max' => 255, 'field' => 'manufacturer part number', 'row' => $this->fileRows + 2]),
-            'pack_size.required' => __('messages.The field is required.', ['field' => 'pack size', 'row' => $this->fileRows + 2]),
-            'pack_size.string' => __('messages.The field must be a string.', ['field' => 'pack size', 'row' => $this->fileRows + 2]),
-            'pack_size.max' => __('messages.The field is too long.', ['max' => 255, 'field' => 'pack size', 'row' => $this->fileRows + 2]),
+            'title.required' => __('messages.The field is required.', ['field' => 'title', 'row' => $this->getRowNumber()]),
+            'title.string' => __('messages.The field must be a string.', ['field' => 'title', 'row' => $this->getRowNumber()]),
+            'title.max' => __('messages.The field is too long.', ['max' => 255, 'field' => 'title', 'row' => $this->getRowNumber()]),
+            'description.string' => __('messages.The field must be a string.', ['field' => 'description', 'row' => $this->getRowNumber()]),
+            'manufacturer_part_number.required' => __('messages.The field is required.', ['field' => 'manufacturer part number', 'row' => $this->getRowNumber()]),
+            'manufacturer_part_number.max' => __('messages.The field is too long.', ['max' => 255, 'field' => 'manufacturer part number', 'row' => $this->getRowNumber()]),
+            'pack_size.required' => __('messages.The field is required.', ['field' => 'pack size', 'row' => $this->getRowNumber()]),
+            'pack_size.string' => __('messages.The field must be a string.', ['field' => 'pack size', 'row' => $this->getRowNumber()]),
+            'pack_size.max' => __('messages.The field is too long.', ['max' => 255, 'field' => 'pack size', 'row' => $this->getRowNumber()]),
         ];
+    }
+
+    public function getProductNumber(): int
+    {
+        return $this->rowNumber - $this->skipRows;
     }
 }

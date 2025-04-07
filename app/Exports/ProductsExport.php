@@ -2,33 +2,28 @@
 
 namespace App\Exports;
 
-use App\Models\Product;
-use App\Traits\HasExportStats;
-use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\RegistersEventListeners;
-use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ProductsExport implements FromQuery, WithHeadings, WithMapping, WithEvents
+class ProductsExport extends SpreadsheetExport implements FromQuery, WithHeadings, WithMapping
 {
-    use RegistersEventListeners, Exportable, HasExportStats;
-
-    public string $fileName;
-    protected int $number = 1;
+    use Exportable;
 
     public function __construct()
     {
+        parent::__construct();
         $this->fileName = 'products-' . Str::random() . '.xlsx';
     }
 
     public function headings(): array
     {
         return [
-            'number',
+            'id',
             'title',
             'description',
             'manufacturer_part_number',
@@ -38,19 +33,22 @@ class ProductsExport implements FromQuery, WithHeadings, WithMapping, WithEvents
 
     public function map($product): array
     {
-        $this->fileRows++;
+        $this->rowNumber++;
 
         return [
-            $this->number++,
+            $product->id,
             $product->title,
             $product->description,
             $product->manufacturer_part_number,
-            $product->packSize->name,
+            $product->pack_size,
         ];
     }
 
-    public function query(): Relation|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+    public function query(): Builder
     {
-        return Product::query();
+        return DB::table('products')
+            ->select('products.id as id', 'title', 'description', 'manufacturer_part_number', 'pack_sizes.name as pack_size')
+            ->join('pack_sizes', 'products.pack_size_id', '=', 'pack_sizes.id')
+            ->orderBy('id');
     }
 }

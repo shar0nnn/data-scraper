@@ -4,7 +4,6 @@ namespace App\Exports;
 
 use App\Filters\ScrapedProductExportFilter;
 use App\Models\ScrapedProduct;
-use App\Traits\HasExportStats;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -16,7 +15,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class ScrapedProductsExport implements FromQuery, WithHeadings, WithMapping, WithEvents
 {
-    use RegistersEventListeners, Exportable, HasExportStats;
+    use RegistersEventListeners, Exportable;
 
     public string $fileName;
     private int $number = 1;
