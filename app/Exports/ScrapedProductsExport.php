@@ -6,6 +6,7 @@ use App\Filters\ScrapedProductExportFilter;
 use App\Models\ScrapedProduct;
 use App\Traits\HasExportStats;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
@@ -17,14 +18,16 @@ class ScrapedProductsExport implements FromQuery, WithHeadings, WithMapping, Wit
 {
     use RegistersEventListeners, Exportable, HasExportStats;
 
-    public string $fileName = 'scraped-products.xlsx';
+    public string $fileName;
     private int $number = 1;
 
     public function __construct(private ScrapedProductExportFilter $filter)
     {
+        $this->fileName = 'scraped-products-' . Str::random() . '.xlsx';
     }
 
-    public function headings(): array
+    public
+    function headings(): array
     {
         return [
             'number',
@@ -36,7 +39,8 @@ class ScrapedProductsExport implements FromQuery, WithHeadings, WithMapping, Wit
         ];
     }
 
-    public function map($scrapedProduct): array
+    public
+    function map($scrapedProduct): array
     {
         $this->fileRows++;
 
@@ -50,7 +54,8 @@ class ScrapedProductsExport implements FromQuery, WithHeadings, WithMapping, Wit
         ];
     }
 
-    public function query(): Relation|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+    public
+    function query(): Relation|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
     {
         return $this->filter->apply(ScrapedProduct::with(['product', 'retailer']));
     }

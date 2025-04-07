@@ -5,6 +5,7 @@ namespace App\Exports;
 use App\Models\Product;
 use App\Traits\HasExportStats;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
@@ -16,8 +17,13 @@ class ProductsExport implements FromQuery, WithHeadings, WithMapping, WithEvents
 {
     use RegistersEventListeners, Exportable, HasExportStats;
 
-    public string $fileName = 'products.xlsx';
+    public string $fileName;
     protected int $number = 1;
+
+    public function __construct()
+    {
+        $this->fileName = 'products-' . Str::random() . '.xlsx';
+    }
 
     public function headings(): array
     {
