@@ -103,6 +103,8 @@ class ProductController extends Controller
             'Products imported successfully.',
             meta: [
                 'file_rows' => $productsImport->getRowNumber(),
+                'rows_stored' => $productsImport->getRowStored(),
+                'rows_updated' => $productsImport->getRowUpdated(),
                 'memory_usage' => $productsImport->getMemoryUsage(),
                 'execution_time' => $productsImport->getExecutionTime(),
             ],

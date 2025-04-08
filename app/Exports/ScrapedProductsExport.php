@@ -8,20 +8,16 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\RegistersEventListeners;
-use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ScrapedProductsExport implements FromQuery, WithHeadings, WithMapping, WithEvents
+class ScrapedProductsExport extends SpreadsheetExport implements FromQuery, WithHeadings, WithMapping
 {
-    use RegistersEventListeners, Exportable;
-
-    public string $fileName;
-    private int $number = 1;
+    use Exportable;
 
     public function __construct(private ScrapedProductExportFilter $filter)
     {
+        parent::__construct();
         $this->fileName = 'scraped-products-' . Str::random() . '.xlsx';
     }
 
@@ -29,7 +25,7 @@ class ScrapedProductsExport implements FromQuery, WithHeadings, WithMapping, Wit
     function headings(): array
     {
         return [
-            'number',
+            'id',
             'product',
             'retailer',
             'price',
@@ -41,10 +37,10 @@ class ScrapedProductsExport implements FromQuery, WithHeadings, WithMapping, Wit
     public
     function map($scrapedProduct): array
     {
-        $this->fileRows++;
+        $this->rowNumber++;
 
         return [
-            $this->number++,
+            $scrapedProduct->id,
             $scrapedProduct->product->title,
             $scrapedProduct->retailer->title,
             $scrapedProduct->price,
@@ -53,9 +49,13 @@ class ScrapedProductsExport implements FromQuery, WithHeadings, WithMapping, Wit
         ];
     }
 
-    public
-    function query(): Relation|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+    public function query(): Relation|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
     {
-        return $this->filter->apply(ScrapedProduct::with(['product', 'retailer']));
+        return $this->filter->apply(
+            ScrapedProduct::query()
+                ->with(['product:id,title', 'retailer:id,title'])
+                ->select(['id', 'product_id', 'retailer_id', 'price', 'stock_count', 'rating'])
+                ->orderBy('id')
+        );
     }
 }

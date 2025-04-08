@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 class ScrapedProductFilter extends QueryFilters
 {
+    protected bool $joinedScrapingSessions = false;
+
     public function __construct(protected Request $request)
     {
         parent::__construct($request);
@@ -35,15 +37,21 @@ class ScrapedProductFilter extends QueryFilters
 
     public function start_date($value): void
     {
-        $this->queryBuilder
-            ->join('scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
-            ->whereDate('scraping_sessions.created_at', '>=', $value);
+        $this->joinScrapingSessionsIfNeeded();
+        $this->queryBuilder->whereDate('scraping_sessions.created_at', '>=', $value);
     }
 
     public function end_date($value): void
     {
-        $this->queryBuilder
-            ->join('scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
-            ->whereDate('scraping_sessions.created_at', '<=', $value);
+        $this->joinScrapingSessionsIfNeeded();
+        $this->queryBuilder->whereDate('scraping_sessions.created_at', '<=', $value);
+    }
+
+    protected function joinScrapingSessionsIfNeeded(): void
+    {
+        if (!$this->joinedScrapingSessions) {
+            $this->queryBuilder->join('scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id');
+            $this->joinedScrapingSessions = true;
+        }
     }
 }

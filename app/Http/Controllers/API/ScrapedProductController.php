@@ -30,14 +30,14 @@ class ScrapedProductController extends Controller
     public function export(ScrapedProductExportFilter $filter): JsonResponse
     {
         $scrapedProductExport = new ScrapedProductsExport($filter);
-        $scrapedProductExport->store($scrapedProductExport->fileName, 'public', Excel::XLSX);
-        DeletePublicFile::dispatch($scrapedProductExport->fileName)->delay(now()->addHour());
+        $scrapedProductExport->store($scrapedProductExport->getFileName(), 'public', Excel::XLSX);
+        DeletePublicFile::dispatch($scrapedProductExport->getFileName())->delay($scrapedProductExport->getDeletionDelay());
 
         return $this->jsonResponse(
             'Scraped products exported successfully.',
-            Storage::temporaryUrl($scrapedProductExport->fileName, now()->addHour()),
+            Storage::temporaryUrl($scrapedProductExport->getFileName(), $scrapedProductExport->getDeletionDelay()),
             meta: [
-                'file_rows' => $scrapedProductExport->getFileRows(),
+                'file_rows' => $scrapedProductExport->getRowNumber(),
                 'memory_usage' => $scrapedProductExport->getMemoryUsage(),
                 'execution_time' => $scrapedProductExport->getExecutionTime(),
                 'applied_filters' => $filter->appliedFilters

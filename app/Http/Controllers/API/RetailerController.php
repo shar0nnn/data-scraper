@@ -8,12 +8,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Retailer\StoreRetailerRequest;
 use App\Http\Requests\Retailer\UpdateRetailerRequest;
 use App\Http\Resources\RetailerResource;
+use App\Jobs\DeletePublicFile;
 use App\Models\Retailer;
 use App\Services\RetailerService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
-use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class RetailerController extends Controller
 {
@@ -80,17 +80,28 @@ class RetailerController extends Controller
     public function metrics(ScrapedProductFilter $scrapedProductFilter): JsonResponse
     {
         return $this->jsonResponse(
-            data: $this->retailerService->metrics($scrapedProductFilter),
+            data: $this->retailerService->metrics($scrapedProductFilter)->get(),
             meta: [
                 'applied_filters' => $scrapedProductFilter->appliedFilters,
             ]
         );
     }
 
-    public function exportMetrics(ScrapedProductFilter $scrapedProductFilter): BinaryFileResponse
+    public function exportMetrics(RetailerService $retailerService, ScrapedProductFilter $filter): JsonResponse
     {
-        return FacadeExcel::download(
-            new RetailersMetricsExport($scrapedProductFilter), 'retailers-metrics.xlsx', Excel::XLSX
+        $retailerMetricsExport = new RetailersMetricsExport($retailerService, $filter);
+        $retailerMetricsExport->store($retailerMetricsExport->getFileName(), 'public', Excel::XLSX);
+        DeletePublicFile::dispatch($retailerMetricsExport->getFileName())->delay($retailerMetricsExport->getDeletionDelay());
+
+        return $this->jsonResponse(
+            'Retailers metrics exported successfully.',
+            Storage::temporaryUrl($retailerMetricsExport->getFileName(), $retailerMetricsExport->getDeletionDelay()),
+            meta: [
+                'file_rows' => $retailerMetricsExport->getRowNumber(),
+                'memory_usage' => $retailerMetricsExport->getMemoryUsage(),
+                'execution_time' => $retailerMetricsExport->getExecutionTime(),
+                'applied_filters' => $filter->appliedFilters
+            ]
         );
     }
 }

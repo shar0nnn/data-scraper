@@ -13,7 +13,6 @@ class SpreadsheetService implements WithEvents
         protected int   $memoryUsage = 0,
         protected float $executionTime = 0,
         protected int   $rowNumber = 0,
-        protected int   $skipRows = 0
     )
     {
     }

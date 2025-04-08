@@ -45,6 +45,7 @@ return [
     'Retailer updated successfully.' => 'Retailer updated successfully.',
     'Error while deleting retailer.' => 'Error while deleting retailer.',
     'Retailer deleted successfully.' => 'Retailer deleted successfully.',
+    'Retailers metrics exported successfully.' => 'Retailers metrics exported successfully.',
 
     // Scraped Product
     'Error while storing scraped product.' => 'Error while storing scraped product.',

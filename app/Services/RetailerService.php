@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Filters\ScrapedProductFilter;
 use App\Models\Retailer;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -93,7 +93,7 @@ class RetailerService
         }
     }
 
-    public function metrics(ScrapedProductFilter $scrapedProductFilter): Collection
+    public function metrics(ScrapedProductFilter $scrapedProductFilter): Builder
     {
         $queryBuilder = DB::table('scraped_products')
             ->selectRaw('
@@ -144,6 +144,6 @@ class RetailerService
         ) AS count_images_table'), 'scraped_products.id', '=', 'count_images_table.scraped_product_id')
             ->groupBy('retailer_id');
 
-        return $scrapedProductFilter->apply($queryBuilder)->get();
+        return $scrapedProductFilter->apply($queryBuilder);
     }
 }

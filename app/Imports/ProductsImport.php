@@ -13,7 +13,10 @@ use Maatwebsite\Excel\Row;
 
 class ProductsImport extends SpreadsheetImport implements WithHeadingRow, SkipsEmptyRows, OnEachRow
 {
-    public function __construct()
+    public function __construct(
+        private $rowStored = 0,
+        private $rowUpdated = 0
+    )
     {
         parent::__construct();
         $this->skipRows = 1;
@@ -37,7 +40,7 @@ class ProductsImport extends SpreadsheetImport implements WithHeadingRow, SkipsE
             )->id;
         }
 
-        Product::query()->updateOrCreate(
+        $product = Product::query()->updateOrCreate(
             [
                 'manufacturer_part_number' => $row['manufacturer_part_number'],
                 'pack_size_id' => $packSize
@@ -49,6 +52,8 @@ class ProductsImport extends SpreadsheetImport implements WithHeadingRow, SkipsE
                 'pack_size_id' => $packSize,
             ]
         );
+
+        $product->wasRecentlyCreated ? $this->rowUpdated++ : $this->rowStored++;
     }
 
     /**
@@ -87,5 +92,15 @@ class ProductsImport extends SpreadsheetImport implements WithHeadingRow, SkipsE
     public function getProductNumber(): int
     {
         return $this->rowNumber - $this->skipRows;
+    }
+
+    public function getRowStored(): int
+    {
+        return $this->rowStored;
+    }
+
+    public function getRowUpdated(): int
+    {
+        return $this->rowUpdated;
     }
 }
