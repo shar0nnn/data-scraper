@@ -17,6 +17,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Excel;
 use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
 use Throwable;
@@ -84,10 +85,18 @@ class ProductController extends Controller
     {
         try {
             FacadeExcel::import($productsImport, $request->validated('file'));
+        } catch (ValidationException $exception) {
+            return $this->jsonResponse(
+                $exception->getMessage(),
+                status: Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         } catch (Throwable $throwable) {
             Log::error($throwable->getMessage());
 
-            return $this->jsonResponse($throwable->getMessage(), status: Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->jsonResponse(
+                'Error while importing products.',
+                status: Response::HTTP_SERVICE_UNAVAILABLE
+            );
         }
 
         return $this->jsonResponse(
