@@ -20,11 +20,11 @@ class QueryFilters
     public function apply(QueryBuilder|EloquentBuilder $builder): EloquentBuilder|QueryBuilder
     {
         if ($builder instanceof EloquentBuilder) {
-            $this->eloquentBuilder = $builder;
+            $this->setEloquentBuilder($builder);
         }
 
         if ($builder instanceof QueryBuilder) {
-            $this->queryBuilder = $builder;
+            $this->setQueryBuilder($builder);
         }
 
         foreach ($this->filters() as $name => $value) {
@@ -46,5 +46,15 @@ class QueryFilters
     private function filters(): array
     {
         return $this->request->all();
+    }
+
+    public function setEloquentBuilder(EloquentBuilder $builder): void
+    {
+        $this->eloquentBuilder = $builder;
+    }
+
+    public function setQueryBuilder(QueryBuilder $builder): void
+    {
+        $this->queryBuilder = $builder;
     }
 }
