@@ -2,13 +2,17 @@
 
 namespace App\Filters;
 
+use App\Actions\ParseToDateString;
+use App\Services\QueryBuilderService;
 use Illuminate\Http\Request;
 
-class ScrapedProductFilter extends QueryFilters
+class ScrapedProductFilter extends QueryStringFilters
 {
-    protected bool $joinedScrapingSessions = false;
-
-    public function __construct(protected Request $request)
+    public function __construct(
+        protected Request           $request,
+        private QueryBuilderService $queryBuilderService,
+        private ParseToDateString   $parseToDateString,
+    )
     {
         parent::__construct($request);
     }
@@ -37,21 +41,15 @@ class ScrapedProductFilter extends QueryFilters
 
     public function start_date($value): void
     {
-        $this->joinScrapingSessionsIfNeeded();
-        $this->queryBuilder->whereDate('scraping_sessions.created_at', '>=', $value);
+        $this->queryBuilderService
+            ->joinOnce($this->queryBuilder, 'scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
+            ->whereDate('scraping_sessions.created_at', '>=', $this->parseToDateString->execute($value));
     }
 
     public function end_date($value): void
     {
-        $this->joinScrapingSessionsIfNeeded();
-        $this->queryBuilder->whereDate('scraping_sessions.created_at', '<=', $value);
-    }
-
-    protected function joinScrapingSessionsIfNeeded(): void
-    {
-        if (!$this->joinedScrapingSessions) {
-            $this->queryBuilder->join('scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id');
-            $this->joinedScrapingSessions = true;
-        }
+        $this->queryBuilderService
+            ->joinOnce($this->queryBuilder, 'scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
+            ->whereDate('scraping_sessions.created_at', '<=', $this->parseToDateString->execute($value));
     }
 }
