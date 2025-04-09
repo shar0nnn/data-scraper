@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Filters\ScrapedProductExportFilter;
 use App\Models\ScrapedProduct;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -21,8 +22,7 @@ class ScrapedProductsExport extends SpreadsheetExport implements FromQuery, With
         $this->fileName = 'scraped-products-' . Str::random() . '.xlsx';
     }
 
-    public
-    function headings(): array
+    public function headings(): array
     {
         return [
             'id',
@@ -31,11 +31,11 @@ class ScrapedProductsExport extends SpreadsheetExport implements FromQuery, With
             'price',
             'stock_count',
             'rating',
+            'scraped_at'
         ];
     }
 
-    public
-    function map($scrapedProduct): array
+    public function map($scrapedProduct): array
     {
         $this->rowNumber++;
 
@@ -46,6 +46,7 @@ class ScrapedProductsExport extends SpreadsheetExport implements FromQuery, With
             $scrapedProduct->price,
             $scrapedProduct->stock_count,
             $scrapedProduct->rating,
+            Carbon::parse($scrapedProduct->scrapingSession->created_at)->format('d.m.Y'),
         ];
     }
 
@@ -53,8 +54,8 @@ class ScrapedProductsExport extends SpreadsheetExport implements FromQuery, With
     {
         return $this->filter->apply(
             ScrapedProduct::query()
-                ->with(['product:id,title', 'retailer:id,title'])
-                ->select(['id', 'product_id', 'retailer_id', 'price', 'stock_count', 'rating'])
+                ->with(['product:id,title', 'retailer:id,title', 'scrapingSession:id,created_at'])
+                ->select(['id', 'product_id', 'retailer_id', 'scraping_session_id', 'price', 'stock_count', 'rating'])
                 ->orderBy('id')
         );
     }
