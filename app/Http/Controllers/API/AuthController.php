@@ -18,7 +18,7 @@ class AuthController extends Controller
         }
         $user = User::query()->where('email', $request->email)->first();
 
-        if ($user->email === config('settings.parser.email')) {
+        if ($user->email === config('settings.users.parser.email')) {
             return $this->jsonResponse(
                 'Logged in successfully as parser.',
                 ['token' => $user->createToken('parsing', ['scrapedProduct:store'])->plainTextToken],

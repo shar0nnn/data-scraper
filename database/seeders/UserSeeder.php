@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Currency;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -10,18 +9,18 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        if (!User::query()->where('email', 'admin@gmail.com')->exists()) {
+        if (!User::query()->where('email', config('settings.users.admin.email'))->exists()) {
             User::factory()->create([
                 'name' => 'SuperUser',
-                'email' => 'admin@gmail.com',
+                'email' => config('settings.users.admin.email'),
                 'password' => 'admin123'
             ]);
         }
 
-        if (!User::query()->where('email', config('settings.parser.email'))->exists()) {
+        if (!User::query()->where('email', config('settings.users.parser.email'))->exists()) {
             User::factory()->create([
                 'name' => 'Parser',
-                'email' => config('settings.parser.email'),
+                'email' => config('settings.users.parser.email'),
                 'password' => 'parser123'
             ]);
         }
