@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 trait Filterable
 {
-    public function scopeFilter(Builder $builder, QueryFilters $queryFilters): Builder
+    public function scopeFilter(Builder $builder, QueryStringFilters $queryFilters): Builder
     {
         return $queryFilters->apply($builder);
     }

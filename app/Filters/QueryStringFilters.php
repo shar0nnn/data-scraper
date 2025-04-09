@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 
-class QueryFilters
+class QueryStringFilters
 {
     protected EloquentBuilder $eloquentBuilder;
     protected QueryBuilder $queryBuilder;
@@ -32,12 +32,8 @@ class QueryFilters
                 continue;
             }
 
+            $this->$name($value);
             $this->appliedFilters[$name] = $value;
-            if (strlen($value)) {
-                $this->$name($value);
-            } else {
-                $this->$name();
-            }
         }
 
         return $this->eloquentBuilder ?? $this->queryBuilder;
