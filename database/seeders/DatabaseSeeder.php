@@ -10,6 +10,7 @@ use App\Models\Retailer;
 use App\Models\ScrapedImage;
 use App\Models\ScrapedProduct;
 use App\Models\ScrapingSession;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -30,6 +31,7 @@ class DatabaseSeeder extends Seeder
 //        Currency::query()->truncate();
 //        ScrapingSession::query()->truncate();
 //        DB::table('product_retailer')->truncate();
+//        User::query()->truncate();
 //        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         ScrapedImage::query()->delete();
@@ -41,8 +43,10 @@ class DatabaseSeeder extends Seeder
         Retailer::query()->delete();
         PackSize::query()->delete();
         Currency::query()->delete();
+        User::query()->delete();
 
         $this->call([
+            UserSeeder::class,
             PackSizeSeeder::class,
             CurrencySeeder::class,
             RetailerSeeder::class,
