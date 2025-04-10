@@ -16,7 +16,7 @@ class ProductRetailerSeeder extends MainSeeder
         $retailers = Retailer::query()->pluck('id');
         $products = Product::query()->pluck('id');
         foreach ($products as $product) {
-            $randomNumberOfProductRetailers = $this->faker->randomElements($retailers, rand(1, 2));
+            $randomNumberOfProductRetailers = $this->faker->randomElements($retailers, rand(1, 3));
 
             foreach ($randomNumberOfProductRetailers as $retailer) {
                 $data[] = [

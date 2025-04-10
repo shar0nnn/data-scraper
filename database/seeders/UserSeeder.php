@@ -9,20 +9,14 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        if (!User::query()->where('email', config('settings.users.admin.email'))->exists()) {
-            User::factory()->create([
-                'name' => 'SuperUser',
-                'email' => config('settings.users.admin.email'),
-                'password' => 'admin123'
-            ]);
-        }
-
-        if (!User::query()->where('email', config('settings.users.parser.email'))->exists()) {
-            User::factory()->create([
-                'name' => 'Parser',
-                'email' => config('settings.users.parser.email'),
-                'password' => 'parser123'
-            ]);
-        }
+        User::factory()->createMany([[
+            'name' => 'SuperUser',
+            'email' => config('settings.users.admin.email'),
+            'password' => 'admin123'
+        ], [
+            'name' => 'Parser',
+            'email' => config('settings.users.parser.email'),
+            'password' => 'parser123'
+        ]]);
     }
 }

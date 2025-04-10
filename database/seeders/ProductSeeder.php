@@ -11,29 +11,23 @@ class ProductSeeder extends MainSeeder
     public function run(): void
     {
         $packSizes = PackSize::query()->pluck('id');
-        for ($i = 0; $i < 1000; $i++) {
-            $products[] = [
-                'title' => $this->faker->words(asText: true),
-                'description' => $this->faker->text(),
-                'manufacturer_part_number' => $this->faker->unique()->numerify('###############'),
-                'pack_size_id' => $packSizes->random(),
-                'updated_at' => now(),
-                'created_at' => now(),
-            ];
-        }
+
+        $products = Product::factory()
+            ->count(1000)
+            ->state(fn() => ['pack_size_id' => $packSizes->random()])
+            ->raw();
+
         Product::query()->insert($products);
 
         $products = Product::query()->pluck('id');
-        $images = [];
-        foreach ($products as $product) {
-            $images[] = [
+
+        $images = $products->map(function ($product) {
+            return Image::factory()->raw([
                 'imageable_id' => $product,
                 'imageable_type' => Product::class,
-                'link' => $this->faker->url(),
-                'updated_at' => now(),
-                'created_at' => now(),
-            ];
-        }
+            ]);
+        })->toArray();
+
         Image::query()->insert($images);
     }
 }

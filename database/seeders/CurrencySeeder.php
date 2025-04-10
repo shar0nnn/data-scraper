@@ -9,6 +9,7 @@ class CurrencySeeder extends Seeder
 {
     public function run(): void
     {
+        $now = now();
         $currencies = [
             ['code' => 'USD', 'description' => 'American dollar', 'symbol' => '$'],
             ['code' => 'EUR', 'description' => 'Euro', 'symbol' => '€'],
@@ -21,8 +22,11 @@ class CurrencySeeder extends Seeder
             ['code' => 'KRW', 'description' => 'South Korean won', 'symbol' => '₩'],
         ];
 
-        foreach ($currencies as $currency) {
-            Currency::query()->create($currency);
-        }
+        $currencies = array_map(fn($item) => array_merge($item, [
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]), $currencies);
+
+        Currency::query()->insert($currencies);
     }
 }

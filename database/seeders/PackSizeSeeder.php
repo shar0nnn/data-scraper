@@ -18,8 +18,6 @@ class PackSizeSeeder extends Seeder
             ['name' => 'container'],
         ];
 
-        foreach ($packSizes as $packSize) {
-            PackSize::query()->insert($packSize);
-        }
+        PackSize::query()->insert($packSizes);
     }
 }

@@ -24,19 +24,16 @@ class ScrapedProductSeeder extends MainSeeder
         for ($i = 0; $i < 365; $i++) {
             foreach ($retailers as $retailer) {
                 foreach ($products[$retailer] as $product) {
-                    $price = $this->faker->randomFloat(2, 1000, 100000);
-                    $expVariation = exp($this->faker->randomFloat(2, -2, 2));
-                    $price = $price * $expVariation;
                     $scrapedProducts[] = [
                         'product_id' => $product,
                         'retailer_id' => $retailer,
-                        'price' => $price,
-                        'stock_count' => $this->faker->numberBetween(0, 10000),
+                        'price' => $this->faker->randomFloat(2, 0, 100000),
+                        'stock_count' => $this->faker->numberBetween(0, 100000),
                         'rating' => json_encode([
-                            1 => $this->faker->numberBetween(0, 500),
-                            2 => $this->faker->numberBetween(0, 1000),
+                            1 => $this->faker->numberBetween(0, 7000),
+                            2 => $this->faker->numberBetween(0, 4000),
                             3 => $this->faker->numberBetween(0, 2000),
-                            4 => $this->faker->numberBetween(0, 5000),
+                            4 => $this->faker->numberBetween(0, 6000),
                             5 => $this->faker->numberBetween(0, 10000),
                         ]),
                         'scraping_session_id' => $scrapingSessions[$currentScrapingSession],
