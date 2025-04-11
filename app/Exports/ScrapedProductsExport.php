@@ -4,7 +4,7 @@ namespace App\Exports;
 
 use App\Filters\ScrapedProductExportFilter;
 use App\Models\ScrapedProduct;
-use Carbon\Carbon;
+use App\Services\DateService;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -46,7 +46,9 @@ class ScrapedProductsExport extends SpreadsheetExport implements FromQuery, With
             $scrapedProduct->price,
             $scrapedProduct->stock_count,
             $scrapedProduct->rating,
-            Carbon::parse($scrapedProduct->scrapingSession->created_at)->format('d.m.Y'),
+            $scrapedProduct->scrapingSession->created_at
+                ? DateService::toDMY($scrapedProduct->scrapingSession->created_at)
+                : null
         ];
     }
 
