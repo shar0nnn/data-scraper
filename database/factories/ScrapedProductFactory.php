@@ -12,8 +12,8 @@ class ScrapedProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'product_id' => Product::query()->inRandomOrder()->first(),
-            'retailer_id' => Retailer::query()->inRandomOrder()->first(),
+            'product_id' => Product::query()->inRandomOrder()->first()->id,
+            'retailer_id' => Retailer::query()->inRandomOrder()->first()->id,
             'price' => $this->faker->randomFloat(2, 0, 1000000),
             'stock_count' => $this->faker->numberBetween(0, 100000),
             'rating' => json_encode([
@@ -23,7 +23,7 @@ class ScrapedProductFactory extends Factory
                 4 => $this->faker->numberBetween(0, 6000),
                 5 => $this->faker->numberBetween(0, 10000),
             ]),
-            'scraping_session_id' => ScrapingSession::query()->inRandomOrder()->first(),
+            'scraping_session_id' => ScrapingSession::query()->inRandomOrder()->first()->id,
             'created_at' => now(),
             'updated_at' => now(),
         ];
