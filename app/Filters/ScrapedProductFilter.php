@@ -2,17 +2,14 @@
 
 namespace App\Filters;
 
-use App\Actions\ParseToDateString;
-use App\Services\QueryBuilderService;
+use App\Services\DateService;
 use Illuminate\Http\Request;
 
 class ScrapedProductFilter extends QueryStringFilters
 {
-    public function __construct(
-        protected Request           $request,
-        private QueryBuilderService $queryBuilderService,
-        private ParseToDateString   $parseToDateString,
-    )
+//    use HasQueryBuilderCustomMethods;
+
+    public function __construct(protected Request $request)
     {
         parent::__construct($request);
     }
@@ -41,15 +38,23 @@ class ScrapedProductFilter extends QueryStringFilters
 
     public function start_date($value): void
     {
-        $this->queryBuilderService
-            ->joinOnce($this->queryBuilder, 'scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
-            ->whereDate('scraping_sessions.created_at', '>=', $this->parseToDateString->execute($value));
+        $date = DateService::toDateString($value);
+
+        if ($date) {
+            $this->queryBuilder
+                ->joinOnce('scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
+                ->whereDate('scraping_sessions.created_at', '>=', $date);
+        }
     }
 
     public function end_date($value): void
     {
-        $this->queryBuilderService
-            ->joinOnce($this->queryBuilder, 'scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
-            ->whereDate('scraping_sessions.created_at', '<=', $this->parseToDateString->execute($value));
+        $date = DateService::toDateString($value);
+
+        if ($date) {
+            $this->queryBuilder
+                ->joinOnce('scraping_sessions', 'scraping_session_id', '=', 'scraping_sessions.id')
+                ->whereDate('scraping_sessions.created_at', '<=', $date);
+        }
     }
 }
