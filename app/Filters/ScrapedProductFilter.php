@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 
 class ScrapedProductFilter extends QueryStringFilters
 {
-//    use HasQueryBuilderCustomMethods;
-
     public function __construct(protected Request $request)
     {
         parent::__construct($request);

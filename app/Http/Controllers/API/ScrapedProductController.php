@@ -29,6 +29,7 @@ class ScrapedProductController extends Controller
 
     public function export(ScrapedProductExportFilter $filter): JsonResponse
     {
+        ini_set('max_execution_time', 280);
         $scrapedProductExport = new ScrapedProductsExport($filter);
         $scrapedProductExport->store($scrapedProductExport->getFileName(), 'public', Excel::XLSX);
         DeletePublicFile::dispatch($scrapedProductExport->getFileName())->delay($scrapedProductExport->getDeletionDelay());

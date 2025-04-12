@@ -5,14 +5,14 @@ namespace App\Exports;
 use App\Filters\ScrapedProductExportFilter;
 use App\Models\ScrapedProduct;
 use App\Services\DateService;
-use Illuminate\Database\Eloquent\Relations\Relation;
+use Generator;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\FromGenerator;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ScrapedProductsExport extends SpreadsheetExport implements FromQuery, WithHeadings, WithMapping
+class ScrapedProductsExport extends SpreadsheetExport implements FromGenerator, WithHeadings, WithMapping
 {
     use Exportable;
 
@@ -52,13 +52,17 @@ class ScrapedProductsExport extends SpreadsheetExport implements FromQuery, With
         ];
     }
 
-    public function query(): Relation|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+    public function generator(): Generator
     {
-        return $this->filter->apply(
-            ScrapedProduct::query()
-                ->with(['product:id,title', 'retailer:id,title', 'scrapingSession:id,created_at'])
-                ->select(['id', 'product_id', 'retailer_id', 'scraping_session_id', 'price', 'stock_count', 'rating'])
-                ->orderBy('id')
-        );
+        foreach (
+            $this->filter->apply(
+                ScrapedProduct::query()
+                    ->with(['product:id,title', 'retailer:id,title', 'scrapingSession:id,created_at'])
+                    ->select(['id', 'product_id', 'retailer_id', 'scraping_session_id', 'price', 'stock_count', 'rating'])
+                    ->orderBy('id')
+            )->lazy(5000) as $scrapedProduct
+        ) {
+            yield $scrapedProduct;
+        }
     }
 }
