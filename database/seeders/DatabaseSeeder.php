@@ -18,9 +18,6 @@ use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
 //        DB::statement('SET FOREIGN_KEY_CHECKS=0');
@@ -36,7 +33,6 @@ class DatabaseSeeder extends Seeder
 //        User::query()->truncate();
 //        Location::query()->truncate();
 //        Role::query()->truncate();
-//        DB::table('product_retailer')->truncate();
 //        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         ScrapedImage::query()->delete();
@@ -51,13 +47,11 @@ class DatabaseSeeder extends Seeder
         User::query()->delete();
         Location::query()->delete();
         Role::query()->delete();
-        DB::table('role_user')->delete();
 
         $this->call([
-            RoleSeeder::class,
             LocationSeeder::class,
-            UserSeeder::class,
             RoleSeeder::class,
+            UserSeeder::class,
             PackSizeSeeder::class,
             CurrencySeeder::class,
             RetailerSeeder::class,
