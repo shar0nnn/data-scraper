@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/app/Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=11.0.9" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=11.0.9" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=11.0.9" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/var/www/html/app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Services</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ProductService.php.html#11">App\Services\ProductService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RetailerService.php.html#13">App\Services\RetailerService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScrapedProductService.php.html#13">App\Services\ScrapedProductService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SpreadsheetService.php.html#8">App\Services\SpreadsheetService</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ProductService.php.html#11">App\Services\ProductService</a></td><td class="text-right">306</td></tr>
+       <tr><td><a href="RetailerService.php.html#13">App\Services\RetailerService</a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="ScrapedProductService.php.html#13">App\Services\ScrapedProductService</a></td><td class="text-right">20</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ProductService.php.html#13"><abbr title="App\Services\ProductService::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProductService.php.html#55"><abbr title="App\Services\ProductService::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProductService.php.html#106"><abbr title="App\Services\ProductService::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RetailerService.php.html#15"><abbr title="App\Services\RetailerService::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RetailerService.php.html#41"><abbr title="App\Services\RetailerService::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RetailerService.php.html#71"><abbr title="App\Services\RetailerService::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RetailerService.php.html#96"><abbr title="App\Services\RetailerService::metrics">metrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScrapedProductService.php.html#15"><abbr title="App\Services\ScrapedProductService::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SpreadsheetService.php.html#12"><abbr title="App\Services\SpreadsheetService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SpreadsheetService.php.html#20"><abbr title="App\Services\SpreadsheetService::beforeProcessing">beforeProcessing</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SpreadsheetService.php.html#25"><abbr title="App\Services\SpreadsheetService::afterProcessing">afterProcessing</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SpreadsheetService.php.html#31"><abbr title="App\Services\SpreadsheetService::getMemoryUsage">getMemoryUsage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SpreadsheetService.php.html#38"><abbr title="App\Services\SpreadsheetService::getExecutionTime">getExecutionTime</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SpreadsheetService.php.html#45"><abbr title="App\Services\SpreadsheetService::getRowNumber">getRowNumber</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ProductService.php.html#55"><abbr title="App\Services\ProductService::update">update</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="ProductService.php.html#13"><abbr title="App\Services\ProductService::store">store</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="RetailerService.php.html#41"><abbr title="App\Services\RetailerService::update">update</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="ScrapedProductService.php.html#15"><abbr title="App\Services\ScrapedProductService::store">store</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="ProductService.php.html#106"><abbr title="App\Services\ProductService::destroy">destroy</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="RetailerService.php.html#15"><abbr title="App\Services\RetailerService::store">store</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="RetailerService.php.html#71"><abbr title="App\Services\RetailerService::destroy">destroy</abbr></a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.9</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.4</a> and <a href="https://phpunit.de/">PHPUnit 11.5.12</a> at Mon Apr 14 11:19:37 UTC 2025.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=11.0.9" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=11.0.9" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=11.0.9" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([4,0,0,0,0,0,0,0,0,0,0,1], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([14,0,0,0,0,0,0,0,0,0,0,2], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[100,6,"<a href=\"DateService.php.html#7\">App\\Services\\DateService<\/a>"],[0,17,"<a href=\"ProductService.php.html#11\">App\\Services\\ProductService<\/a>"],[0,10,"<a href=\"RetailerService.php.html#13\">App\\Services\\RetailerService<\/a>"],[0,4,"<a href=\"ScrapedProductService.php.html#13\">App\\Services\\ScrapedProductService<\/a>"],[0,6,"<a href=\"SpreadsheetService.php.html#8\">App\\Services\\SpreadsheetService<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[100,3,"<a href=\"DateService.php.html#11\">App\\Services\\DateService::toDateString<\/a>"],[100,3,"<a href=\"DateService.php.html#24\">App\\Services\\DateService::toDMY<\/a>"],[0,6,"<a href=\"ProductService.php.html#13\">App\\Services\\ProductService::store<\/a>"],[0,8,"<a href=\"ProductService.php.html#55\">App\\Services\\ProductService::update<\/a>"],[0,3,"<a href=\"ProductService.php.html#106\">App\\Services\\ProductService::destroy<\/a>"],[0,3,"<a href=\"RetailerService.php.html#15\">App\\Services\\RetailerService::store<\/a>"],[0,4,"<a href=\"RetailerService.php.html#41\">App\\Services\\RetailerService::update<\/a>"],[0,2,"<a href=\"RetailerService.php.html#71\">App\\Services\\RetailerService::destroy<\/a>"],[0,1,"<a href=\"RetailerService.php.html#96\">App\\Services\\RetailerService::metrics<\/a>"],[0,4,"<a href=\"ScrapedProductService.php.html#15\">App\\Services\\ScrapedProductService::store<\/a>"],[0,1,"<a href=\"SpreadsheetService.php.html#12\">App\\Services\\SpreadsheetService::__construct<\/a>"],[0,1,"<a href=\"SpreadsheetService.php.html#20\">App\\Services\\SpreadsheetService::beforeProcessing<\/a>"],[0,1,"<a href=\"SpreadsheetService.php.html#25\">App\\Services\\SpreadsheetService::afterProcessing<\/a>"],[0,1,"<a href=\"SpreadsheetService.php.html#31\">App\\Services\\SpreadsheetService::getMemoryUsage<\/a>"],[0,1,"<a href=\"SpreadsheetService.php.html#38\">App\\Services\\SpreadsheetService::getExecutionTime<\/a>"],[0,1,"<a href=\"SpreadsheetService.php.html#45\">App\\Services\\SpreadsheetService::getRowNumber<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>
