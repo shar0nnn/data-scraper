@@ -4,9 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Currency;
 use App\Models\Image;
+use App\Models\Location;
 use App\Models\PackSize;
 use App\Models\Product;
 use App\Models\Retailer;
+use App\Models\Role;
 use App\Models\ScrapedImage;
 use App\Models\ScrapedProduct;
 use App\Models\ScrapingSession;
@@ -32,6 +34,9 @@ class DatabaseSeeder extends Seeder
 //        ScrapingSession::query()->truncate();
 //        DB::table('product_retailer')->truncate();
 //        User::query()->truncate();
+//        Location::query()->truncate();
+//        Role::query()->truncate();
+//        DB::table('product_retailer')->truncate();
 //        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         ScrapedImage::query()->delete();
@@ -44,9 +49,15 @@ class DatabaseSeeder extends Seeder
         PackSize::query()->delete();
         Currency::query()->delete();
         User::query()->delete();
+        Location::query()->delete();
+        Role::query()->delete();
+        DB::table('role_user')->delete();
 
         $this->call([
+            RoleSeeder::class,
+            LocationSeeder::class,
             UserSeeder::class,
+            RoleSeeder::class,
             PackSizeSeeder::class,
             CurrencySeeder::class,
             RetailerSeeder::class,

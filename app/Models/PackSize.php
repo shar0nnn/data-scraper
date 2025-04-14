@@ -7,12 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PackSize extends Model
 {
-    /**
-     * Indicates that the model should not be timestamped.
-     *
-     * @var bool
-     */
     public $timestamps = false;
+
     protected $fillable = ['name'];
 
     public function products(): HasMany
