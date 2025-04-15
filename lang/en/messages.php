@@ -14,7 +14,9 @@ return [
     'User not found.' => 'User not found.',
     'Error while deleting user.'  => 'Error while deleting user.',
     'User deleted successfully.' => 'User deleted successfully.',
+    'Error while updating user.'  => 'Error while updating user.',
     'User updated successfully.' => 'User updated successfully.',
+    'Selected retailer(s) does not exist.' => 'Selected retailer(s) does not exist.',
 
     // Currency
     'List of currencies' => 'List of currencies',

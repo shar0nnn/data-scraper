@@ -15,6 +15,13 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'location' => $this->location?->name,
             'role' => $this->role->name,
+            'retailers' => $this->whenLoaded('retailers', function () {
+                return $this->retailers->map(fn($retailer) => [
+                    'id' => $retailer->id,
+                    'title' => $retailer->title,
+                ]);
+            }),
+
         ];
     }
 }

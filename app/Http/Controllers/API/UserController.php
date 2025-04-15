@@ -27,36 +27,75 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request): JsonResponse
     {
+        $user = $this->userService->store($request->validated());
+
+        if (! $user) {
+            return $this->jsonResponse(
+                'Error while creating user.',
+                status: Response::HTTP_SERVICE_UNAVAILABLE
+            );
+        }
+
         return $this->jsonResponse(
             'User created successfully.',
-            new UserResource(User::query()->create($request->validated()))
+            new UserResource($user->load('retailers')),
         );
+    }
+
+    public function show(string $id): JsonResponse
+    {
+        $user = User::query()->find($id);
+
+        if (! $user) {
+            return $this->jsonResponse(
+                'User not found.',
+                status: Response::HTTP_NOT_FOUND
+            );
+        }
+
+        return $this->jsonResponse(data: new UserResource($user->load('retailers')));
     }
 
     public function update(UpdateUserRequest $request, string $id): JsonResponse
     {
         $user = User::query()->find($id);
+
         if (! $user) {
-            return $this->jsonResponse('User not found.', status: Response::HTTP_NOT_FOUND);
+            return $this->jsonResponse(
+                'User not found.',
+                status: Response::HTTP_NOT_FOUND
+            );
         }
 
-        $user->update($request->validated());
+        if (! $this->userService->update($request->validated(), $user)) {
+            return $this->jsonResponse(
+                'Error while updating user.',
+                status: Response::HTTP_SERVICE_UNAVAILABLE
+            );
+        }
 
         return $this->jsonResponse(
             'User updated successfully.',
-            new UserResource($user)
+            new UserResource($user->load('retailers')),
         );
     }
 
     public function destroy(string $id): JsonResponse
     {
         $user = User::query()->find($id);
+
         if (! $user) {
-            return $this->jsonResponse('User not found.', status: Response::HTTP_NOT_FOUND);
+            return $this->jsonResponse(
+                'User not found.',
+                status: Response::HTTP_NOT_FOUND
+            );
         }
 
         if (! $this->userService->destroy($user)) {
-            return $this->jsonResponse('Error while deleting user.', status: Response::HTTP_SERVICE_UNAVAILABLE);
+            return $this->jsonResponse(
+                'Error while deleting user.',
+                status: Response::HTTP_SERVICE_UNAVAILABLE
+            );
         }
 
         return $this->jsonResponse('User deleted successfully.');

@@ -20,6 +20,15 @@ class UserRequest extends FormRequest
             'password' => ['required', 'string', 'max:255'],
             'role_id' => ['required', 'exists:roles,id'],
             'location_id' => ['nullable', 'exists:locations,id'],
+            'retailers' => ['nullable', 'array'],
+            'retailers.*' => ['exists:retailers,id'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'retailers.*.exists' => __('Selected retailer(s) does not exist.'),
         ];
     }
 }

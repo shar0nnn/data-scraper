@@ -16,7 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth-check', fn() => response()->noContent());
 
     Route::middleware('ability:server:crud')->group(function () {
-        Route::apiResource('users', UserController::class)->except('show');
+        Route::apiResource('users', UserController::class);
 
         Route::apiResource('retailers', RetailerController::class)->except('show');
         Route::get('/retailers/metrics', [RetailerController::class, 'metrics'])->name('retailers.metrics');
