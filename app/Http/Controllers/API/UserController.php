@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         return $this->jsonResponse(
             'List of users',
-            UserResource::collection(User::all())
+            UserResource::collection(User::with(['role', 'location'])->get())
         );
     }
 
