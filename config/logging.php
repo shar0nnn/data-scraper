@@ -127,6 +127,12 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'users' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/users.log'),
+            'ignore_exceptions' => false,
+        ],
+
         'retailers' => [
             'driver' => 'single',
             'path' => storage_path('logs/retailers.log'),

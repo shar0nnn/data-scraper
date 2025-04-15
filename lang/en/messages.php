@@ -7,6 +7,15 @@ return [
     'Wrong email or password.' => 'Wrong email or password.',
     'Logged out successfully.' => 'Logged out successfully.',
 
+    // User
+    'List of users' => 'List of users',
+    'Error while creating user.' => 'Error while creating user.',
+    'User created successfully.' => 'User created successfully.',
+    'User not found.' => 'User not found.',
+    'Error while deleting user.'  => 'Error while deleting user.',
+    'User deleted successfully.' => 'User deleted successfully.',
+    'User updated successfully.' => 'User updated successfully.',
+
     // Currency
     'List of currencies' => 'List of currencies',
     'Currency created successfully.' => 'Currency created successfully.',

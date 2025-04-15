@@ -6,6 +6,7 @@ use App\Http\Controllers\API\PackSizeController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\RetailerController;
 use App\Http\Controllers\API\ScrapedProductController;
+use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest')->name('login');
@@ -15,6 +16,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth-check', fn() => response()->noContent());
 
     Route::middleware('ability:server:crud')->group(function () {
+        Route::apiResource('users', UserController::class)->except('show');
+
         Route::apiResource('retailers', RetailerController::class)->except('show');
         Route::get('/retailers/metrics', [RetailerController::class, 'metrics'])->name('retailers.metrics');
         Route::get('retailers/metrics/export', [RetailerController::class, 'exportMetrics']);
