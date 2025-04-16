@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 //        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+//        DB::table('userables')->truncate();
+//        DB::table('personal_access_tokens')->truncate();
 //        ScrapedImage::query()->truncate();
 //        Image::query()->truncate();
 //        ScrapedProduct::query()->truncate();
@@ -35,6 +37,8 @@ class DatabaseSeeder extends Seeder
 //        Role::query()->truncate();
 //        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
+        DB::table('userables')->delete();
+        DB::table('personal_access_tokens')->delete();
         ScrapedImage::query()->delete();
         Image::query()->delete();
         ScrapedProduct::query()->delete();
