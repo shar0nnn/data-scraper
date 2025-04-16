@@ -17,10 +17,9 @@ class UserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'max:255'],
             'role_id' => ['required', 'exists:roles,id'],
             'location_id' => ['nullable', 'exists:locations,id'],
-            'retailers' => ['nullable', 'array'],
+            'retailers' => ['array'],
             'retailers.*' => ['exists:retailers,id'],
         ];
     }

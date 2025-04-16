@@ -16,10 +16,7 @@ class UserService
         try {
             DB::beginTransaction();
             $user = User::query()->create($data);
-
-            if (! empty($retailers)) {
-                $user->retailers()->attach($retailers);
-            }
+            $user->retailers()->attach($retailers);
             DB::commit();
 
             return $user;

@@ -13,15 +13,23 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'location' => $this->location?->name,
-            'role' => $this->role->name,
+
+            'role' => $this->whenLoaded('role', fn () => [
+                'id' => $this->role->id,
+                'name' => $this->role->name,
+            ]),
+
+            'location' => $this->whenLoaded('location', fn () => [
+                'id' => $this->location->id,
+                'name' => $this->location->name,
+            ]),
+
             'retailers' => $this->whenLoaded('retailers', function () {
                 return $this->retailers->map(fn($retailer) => [
                     'id' => $retailer->id,
                     'title' => $retailer->title,
                 ]);
             }),
-
         ];
     }
 }

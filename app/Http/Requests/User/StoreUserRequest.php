@@ -14,6 +14,7 @@ class StoreUserRequest extends UserRequest
     public function rules(): array
     {
         $rules = parent::rules();
+        $rules['password'] = ['required', 'string', 'max:255'];
         $rules['email'] = ['required', 'email', 'max:255', 'unique:users,email'];
 
         return $rules;

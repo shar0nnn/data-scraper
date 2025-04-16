@@ -53,7 +53,7 @@ class UserController extends Controller
             );
         }
 
-        return $this->jsonResponse(data: new UserResource($user->load('retailers')));
+        return $this->jsonResponse(data: new UserResource($user->load(['role', 'location', 'retailers'])));
     }
 
     public function update(UpdateUserRequest $request, string $id): JsonResponse
