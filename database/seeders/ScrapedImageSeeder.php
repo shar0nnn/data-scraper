@@ -23,10 +23,14 @@ class ScrapedImageSeeder extends MainSeeder
             }
         };
 
-        $chunks = array_chunk(iterator_to_array($generator()), 5000);
+        foreach ($generator() as $scrapedImage) {
+            $scrapedImages[] = $scrapedImage;
 
-        foreach ($chunks as $chunk) {
-            ScrapedImage::query()->insert($chunk);
+            if (count($scrapedImages) > 5000) {
+                ScrapedImage::query()->insert($scrapedImages);
+
+                unset($scrapedImages);
+            }
         }
     }
 }

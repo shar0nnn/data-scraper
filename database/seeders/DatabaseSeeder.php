@@ -24,12 +24,12 @@ class DatabaseSeeder extends Seeder
 //        ScrapedImage::query()->truncate();
 //        Image::query()->truncate();
 //        ScrapedProduct::query()->truncate();
+//        ScrapingSession::query()->truncate();
+//        DB::table('product_retailer')->truncate();
 //        Product::query()->truncate();
 //        Retailer::query()->truncate();
 //        PackSize::query()->truncate();
 //        Currency::query()->truncate();
-//        ScrapingSession::query()->truncate();
-//        DB::table('product_retailer')->truncate();
 //        User::query()->truncate();
 //        Location::query()->truncate();
 //        Role::query()->truncate();
