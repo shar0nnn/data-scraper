@@ -8,12 +8,9 @@ use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $locations = [
+        $roles = [
             [
                 'name' => RoleEnum::ADMIN,
                 'created_at' => now(),
@@ -26,6 +23,6 @@ class RoleSeeder extends Seeder
             ],
         ];
 
-        Role::query()->insert($locations);
+        Role::query()->insert($roles);
     }
 }
