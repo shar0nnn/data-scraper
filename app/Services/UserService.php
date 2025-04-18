@@ -17,6 +17,10 @@ class UserService
             DB::beginTransaction();
             $user = User::query()->create($data);
             $user->retailers()->attach($retailers);
+            $user->load('retailers.products');
+            $user->products()->attach(
+                $user->retailers->flatMap(fn($retailer) => $retailer->products)->pluck('id')->unique()
+            );
             DB::commit();
 
             return $user;
@@ -37,6 +41,10 @@ class UserService
             DB::beginTransaction();
             $user->update($data);
             $user->retailers()->sync($retailers);
+            $user->load('retailers.products');
+            $user->products()->sync(
+                $user->retailers->flatMap(fn($retailer) => $retailer->products)->pluck('id')->unique()
+            );
             DB::commit();
 
             return $user;
