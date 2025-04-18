@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class Controller
+class Controller
 {
     public function jsonResponse(
         string $message = '',
@@ -16,13 +16,13 @@ abstract class Controller
     ): JsonResponse
     {
         $payload = [];
-        if (!empty($message)) {
+        if (! empty($message)) {
             $payload['message'] = __("messages.$message", $messagePlaceholders);
         }
-        if (!empty($data)) {
+        if (! empty($data)) {
             $payload['data'] = $data;
         }
-        if (!empty($meta)) {
+        if (! empty($meta)) {
             $payload['meta'] = $meta;
         }
 

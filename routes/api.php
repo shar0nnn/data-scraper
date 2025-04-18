@@ -16,35 +16,32 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('guest')->na
 Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/auth-check', fn() => response()->noContent());
+    Route::get('/admin-check', [AuthController::class, 'isCurrentUserAdmin']);
 
     Route::middleware('ability:server:crud')->group(function () {
+        Route::middleware('can:admin-crud')->group(function () {
 
-        // User
-        Route::apiResource('users', UserController::class);
+            Route::apiResource('users', UserController::class);
 
-        // Retailer
-        Route::apiResource('retailers', RetailerController::class)->except('show');
+            Route::apiResource('retailers', RetailerController::class)->except('show');
+
+            Route::apiResource('currencies', CurrencyController::class)->except('show');
+
+            Route::apiResource('roles', RoleController::class)->only('index');
+
+            Route::apiResource('locations', LocationController::class)->only('index');
+        });
+
         Route::get('/retailers/metrics', [RetailerController::class, 'metrics'])->name('retailers.metrics');
         Route::get('retailers/metrics/export', [RetailerController::class, 'exportMetrics']);
 
-        // Product
         Route::apiResource('products', ProductController::class)->except('show');
         Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
         Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
         Route::get('scraped-products/export', [ScrapedProductController::class, 'export'])
             ->name('scraped-products.export');
 
-        // Currency
-        Route::apiResource('currencies', CurrencyController::class)->except('show');
-
-        // Pack Size
         Route::apiResource('pack-sizes', PackSizeController::class)->except('show');
-
-        // Role
-        Route::apiResource('roles', RoleController::class)->only('index');
-
-        // Location
-        Route::apiResource('locations', LocationController::class)->only('index');
     });
 
     Route::post('/scraped-products', [ScrapedProductController::class, 'store'])

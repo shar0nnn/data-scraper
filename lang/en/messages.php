@@ -6,6 +6,7 @@ return [
     'Logged in successfully as parser.' => 'Logged in successfully as parser.',
     'Wrong email or password.' => 'Wrong email or password.',
     'Logged out successfully.' => 'Logged out successfully.',
+    'You are not allowed to perform this action.' => 'You are not allowed to perform this action.',
 
     // User
     'List of users' => 'List of users',

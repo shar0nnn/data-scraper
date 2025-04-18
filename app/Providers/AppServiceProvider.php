@@ -2,14 +2,13 @@
 
 namespace App\Providers;
 
+use App\Policies\AdminPolicy;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         // Query builder adds a join only if the table hasn't already been joined
@@ -22,11 +21,8 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        Gate::define('admin-crud', [AdminPolicy::class, 'crud']);
     }
 }
