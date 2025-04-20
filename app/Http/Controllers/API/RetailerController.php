@@ -8,10 +8,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Retailer\StoreRetailerRequest;
 use App\Http\Requests\Retailer\UpdateRetailerRequest;
 use App\Http\Resources\RetailerResource;
+use App\Http\Resources\UserRetailerResource;
 use App\Jobs\DeletePublicFile;
 use App\Models\Retailer;
 use App\Services\RetailerService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 
@@ -35,7 +37,7 @@ class RetailerController extends Controller
     {
         $retailer = $this->retailerService->store($request->validated());
 
-        if (!$retailer) {
+        if (! $retailer) {
             return $this->jsonResponse('Error while creating retailer.', status: 503);
         }
 
@@ -48,12 +50,14 @@ class RetailerController extends Controller
     public function update(UpdateRetailerRequest $request, string $id): JsonResponse
     {
         $retailer = Retailer::query()->find($id);
-        if (!$retailer) {
+
+        if (! $retailer) {
             return $this->jsonResponse('Retailer not found.', status: 404);
         }
 
         $retailer = $this->retailerService->update($request->validated(), $retailer);
-        if (!$retailer) {
+
+        if (! $retailer) {
             return $this->jsonResponse('Error while updating retailer.', status: 503);
         }
 
@@ -66,11 +70,12 @@ class RetailerController extends Controller
     public function destroy(string $id): JsonResponse
     {
         $retailer = Retailer::query()->find($id);
-        if (!$retailer) {
+
+        if (! $retailer) {
             return $this->jsonResponse('Retailer not found.', status: 404);
         }
 
-        if (!$this->retailerService->destroy($retailer)) {
+        if (! $this->retailerService->destroy($retailer)) {
             return $this->jsonResponse('Error while deleting retailer.', status: 503);
         }
 
@@ -91,6 +96,7 @@ class RetailerController extends Controller
     {
         $retailerMetricsExport = new RetailersMetricsExport($retailerService, $filter);
         $retailerMetricsExport->store($retailerMetricsExport->getFileName(), 'public', Excel::XLSX);
+
         DeletePublicFile::dispatch($retailerMetricsExport->getFileName())->delay($retailerMetricsExport->getDeletionDelay());
 
         return $this->jsonResponse(
@@ -102,6 +108,15 @@ class RetailerController extends Controller
                 'execution_time' => $retailerMetricsExport->getExecutionTime(),
                 'applied_filters' => $filter->appliedFilters
             ]
+        );
+    }
+
+    public function getUserRetailers(Request $request): JsonResponse
+    {
+        return $this->jsonResponse(
+            data: UserRetailerResource::collection(
+                $request->user()->retailers()->get()
+            )
         );
     }
 }

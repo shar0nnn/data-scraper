@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('can:user-crud')->group(function () {
             Route::get('/retailers/metrics', [RetailerController::class, 'metrics'])->name('retailers.metrics');
             Route::get('retailers/metrics/export', [RetailerController::class, 'exportMetrics']);
+            Route::get('user-retailers', [RetailerController::class, 'getUserRetailers']);
 
             Route::apiResource('products', ProductController::class)->except('show');
             Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
