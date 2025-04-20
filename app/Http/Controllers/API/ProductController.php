@@ -13,13 +13,15 @@ use App\Jobs\DeletePublicFile;
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Excel;
 use Maatwebsite\Excel\Facades\Excel as FacadeExcel;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class ProductController extends Controller
@@ -30,17 +32,22 @@ class ProductController extends Controller
     {
     }
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return ProductResource::collection(Product::with(['images', 'packSize'])->paginate(10));
+        return ProductResource::collection(
+            $request->user()->products()->with(['images', 'packSize'])->paginate(10)
+        );
     }
 
     public function store(StoreProductRequest $request): JsonResponse
     {
         $product = $this->productService->store($request->validated());
 
-        if (!$product) {
-            return $this->jsonResponse('Error while creating product.', status: 503);
+        if (! $product) {
+            return $this->jsonResponse(
+                'Error while creating product.',
+                status: Response::HTTP_SERVICE_UNAVAILABLE
+            );
         }
 
         return $this->jsonResponse(
@@ -52,13 +59,19 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, string $id): JsonResponse
     {
         $product = Product::query()->find($id);
-        if (!$product) {
-            return $this->jsonResponse('Product not found.', status: 404);
+        if (! $product) {
+            return $this->jsonResponse(
+                'Product not found.',
+                status: Response::HTTP_NOT_FOUND
+            );
         }
 
         $product = $this->productService->update($request->validated(), $product);
-        if (!$product) {
-            return $this->jsonResponse('Error while updating product.', status: 503);
+        if (! $product) {
+            return $this->jsonResponse(
+                'Error while updating product.',
+                status: Response::HTTP_SERVICE_UNAVAILABLE
+            );
         }
 
         return $this->jsonResponse(
@@ -70,12 +83,14 @@ class ProductController extends Controller
     public function destroy(string $id): JsonResponse
     {
         $product = Product::query()->find($id);
-        if (!$product) {
-            return $this->jsonResponse('Product not found.', status: 404);
-        }
 
-        if (!$this->productService->destroy($product)) {
-            return $this->jsonResponse('Error while deleting product.', status: 503);
+        Gate::authorize('delete', $product);
+
+        if (! $this->productService->destroy($product)) {
+            return $this->jsonResponse(
+                'Error while deleting product.',
+                status: Response::HTTP_SERVICE_UNAVAILABLE
+            );
         }
 
         return $this->jsonResponse('Product deleted successfully.');

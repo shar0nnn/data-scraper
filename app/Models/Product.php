@@ -8,18 +8,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Product extends Model
 {
     use HasFactory;
 
     const string IMAGES_PATH = Image::ROOT_PATH . 'products';
+
     protected $fillable = [
         'title',
         'description',
         'manufacturer_part_number',
         'pack_size_id',
     ];
+
+    public function users(): MorphToMany
+    {
+        return $this->morphToMany(User::class, 'userable');
+    }
 
     public function packSize(): BelongsTo
     {

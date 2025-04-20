@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
+ * @property int $id
  * @property Role $role
  */
 class User extends Authenticatable
@@ -61,5 +62,10 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role->name === RoleEnum::ADMIN->value;
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role->name === RoleEnum::USER->value;
     }
 }

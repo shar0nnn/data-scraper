@@ -32,16 +32,17 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::apiResource('locations', LocationController::class)->only('index');
         });
 
-        Route::get('/retailers/metrics', [RetailerController::class, 'metrics'])->name('retailers.metrics');
-        Route::get('retailers/metrics/export', [RetailerController::class, 'exportMetrics']);
+        Route::middleware('can:user-crud')->group(function () {
+            Route::get('/retailers/metrics', [RetailerController::class, 'metrics'])->name('retailers.metrics');
+            Route::get('retailers/metrics/export', [RetailerController::class, 'exportMetrics']);
 
-        Route::apiResource('products', ProductController::class)->except('show');
-        Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
-        Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
-        Route::get('scraped-products/export', [ScrapedProductController::class, 'export'])
-            ->name('scraped-products.export');
+            Route::apiResource('products', ProductController::class)->except('show');
+            Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
+            Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
+            Route::get('scraped-products/export', [ScrapedProductController::class, 'export']);
 
-        Route::apiResource('pack-sizes', PackSizeController::class)->except('show');
+            Route::apiResource('pack-sizes', PackSizeController::class)->except('show');
+        });
     });
 
     Route::post('/scraped-products', [ScrapedProductController::class, 'store'])
