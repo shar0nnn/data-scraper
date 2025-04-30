@@ -7,6 +7,7 @@ use App\Http\Requests\Currency\CurrencyRequest;
 use App\Http\Resources\CurrencyResource;
 use App\Models\Currency;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class CurrencyController extends Controller
 {
@@ -29,8 +30,12 @@ class CurrencyController extends Controller
     public function update(CurrencyRequest $request, string $id): JsonResponse
     {
         $currency = Currency::query()->find($id);
-        if (!$currency) {
-            return $this->jsonResponse('Currency not found.', status: 404);
+
+        if (! $currency) {
+            return $this->jsonResponse(
+                'Currency not found.',
+                status: Response::HTTP_NOT_FOUND
+            );
         }
 
         $currency->update($request->validated());
@@ -44,13 +49,21 @@ class CurrencyController extends Controller
     public function destroy(string $id): JsonResponse
     {
         $currency = Currency::query()->find($id);
-        if (!$currency) {
-            return $this->jsonResponse('Currency not found.', status: 404);
+
+        if (! $currency) {
+            return $this->jsonResponse(
+                'Currency not found.',
+                status: Response::HTTP_NOT_FOUND
+            );
         }
 
         if ($currency->retailers()->exists()) {
-            return $this->jsonResponse('You can not delete a used currency.', status: 403);
+            return $this->jsonResponse(
+                'You can not delete a used currency.',
+                status: Response::HTTP_FORBIDDEN
+            );
         }
+
         $currency->delete();
 
         return $this->jsonResponse('Currency deleted successfully.');
