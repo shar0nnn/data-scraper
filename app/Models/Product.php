@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Filters\Filterable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,9 +12,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property string $description
+ * @property string $manufacturer_part_number
+ * @property int $pack_size_id
+ */
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, Filterable;
 
     const string IMAGES_PATH = Image::ROOT_PATH . 'products';
 
