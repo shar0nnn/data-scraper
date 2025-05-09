@@ -2,8 +2,9 @@
 
 namespace App\Exports;
 
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\DB;
+use App\Filters\ProductFilter;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -14,7 +15,7 @@ class ProductsExport extends SpreadsheetExport implements FromQuery, WithHeading
 {
     use Exportable;
 
-    public function __construct()
+    public function __construct(private ProductFilter $filter)
     {
         parent::__construct();
         $this->fileName = 'products-' . Str::random() . '.xlsx';
@@ -46,9 +47,11 @@ class ProductsExport extends SpreadsheetExport implements FromQuery, WithHeading
 
     public function query(): Builder
     {
-        return DB::table('products')
-            ->select('products.id as id', 'title', 'description', 'manufacturer_part_number', 'pack_sizes.name as pack_size')
-            ->join('pack_sizes', 'products.pack_size_id', '=', 'pack_sizes.id')
-            ->orderBy('id');
+        return $this->filter->apply(
+            Product::query()
+                ->join('pack_sizes', 'products.pack_size_id', '=', 'pack_sizes.id')
+                ->select('products.id as id', 'title', 'description', 'manufacturer_part_number', 'name as pack_size')
+                ->orderBy('id')
+        );
     }
 }

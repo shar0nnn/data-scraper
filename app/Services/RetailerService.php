@@ -144,6 +144,14 @@ class RetailerService
         ) AS count_images_table'), 'scraped_products.id', '=', 'count_images_table.scraped_product_id')
             ->groupBy('retailer_id');
 
+        $queryBuilder = $scrapedProductFilter->apply($queryBuilder);
+
+        if (isset($scrapedProductFilter->appliedFilters['start_date']) || isset($scrapedProductFilter->appliedFilters['end_date'])) {
+            $queryBuilder
+                ->addSelect(DB::raw('DATE_FORMAT(scraping_sessions.created_at, "%d.%m.%Y") AS scraped_at'))
+                ->groupBy('scraping_sessions.id');
+        }
+
         return $scrapedProductFilter->apply($queryBuilder);
     }
 }

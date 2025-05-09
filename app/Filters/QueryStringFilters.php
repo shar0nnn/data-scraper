@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class QueryStringFilters
 {
     protected EloquentBuilder $eloquentBuilder;
+
     protected QueryBuilder $queryBuilder;
 
     public array $appliedFilters = [];
@@ -28,7 +29,7 @@ class QueryStringFilters
         }
 
         foreach ($this->filters() as $name => $value) {
-            if (!method_exists($this, $name) || empty($value)) {
+            if (! method_exists($this, $name) || empty($value)) {
                 continue;
             }
 
@@ -39,11 +40,6 @@ class QueryStringFilters
         return $this->eloquentBuilder ?? $this->queryBuilder;
     }
 
-    private function filters(): array
-    {
-        return $this->request->all();
-    }
-
     public function setEloquentBuilder(EloquentBuilder $builder): void
     {
         $this->eloquentBuilder = $builder;
@@ -52,5 +48,10 @@ class QueryStringFilters
     public function setQueryBuilder(QueryBuilder $builder): void
     {
         $this->queryBuilder = $builder;
+    }
+
+    private function filters(): array
+    {
+        return $this->request->all();
     }
 }
