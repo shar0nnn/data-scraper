@@ -2,15 +2,14 @@
 
 namespace App\Filters;
 
-use App\Actions\SplitStringIntoArray;
+use App\Actions\SplitString;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 final class ProductFilter extends QueryStringFilters
 {
     public function __construct(
-        public Request               $request,
-        private SplitStringIntoArray $splitStringIntoArray,
+        public Request $request,
     )
     {
         parent::__construct($request);
@@ -19,7 +18,7 @@ final class ProductFilter extends QueryStringFilters
     public function pack_size_ids(string $values): void
     {
         $this->eloquentBuilder->whereHas('packSize', function (Builder $query) use ($values) {
-            $query->whereIn('id', $this->splitStringIntoArray->handle($values));
+            $query->whereIn('id', SplitString::handle($values));
         });
     }
 
@@ -27,7 +26,7 @@ final class ProductFilter extends QueryStringFilters
     {
         // Filters input retailer IDs, keeping only those that belong to the currently authenticated user
         $filteredRetailerIds = array_intersect(
-            $this->splitStringIntoArray->handle($values),
+            SplitString::handle($values),
             $this->request->user()->retailers()->pluck('retailers.id')->toArray()
         );
 
