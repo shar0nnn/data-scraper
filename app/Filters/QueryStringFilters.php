@@ -4,7 +4,6 @@ namespace App\Filters;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Http\Request;
 
 class QueryStringFilters
 {
@@ -13,10 +12,6 @@ class QueryStringFilters
     protected QueryBuilder $queryBuilder;
 
     public array $appliedFilters = [];
-
-    public function __construct(protected Request $request)
-    {
-    }
 
     public function apply(QueryBuilder|EloquentBuilder $builder): EloquentBuilder|QueryBuilder
     {
@@ -52,6 +47,6 @@ class QueryStringFilters
 
     private function filters(): array
     {
-        return $this->request->all();
+        return request()->all();
     }
 }
