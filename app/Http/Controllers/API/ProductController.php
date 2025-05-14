@@ -33,10 +33,10 @@ class ProductController extends Controller
     {
     }
 
-    public function index(ProductFilter $filter): AnonymousResourceCollection
+    public function index(Request $request, ProductFilter $filter): AnonymousResourceCollection
     {
         return ProductResource::collection(
-            $filter->request->user()->products()->with('packSize')->filter($filter)->paginate(10)
+            $request->user()->products()->with('packSize')->filter($filter)->paginate(10)
         )->additional(
             ['meta' => ['applied_filters' => $filter->appliedFilters]]
         );
