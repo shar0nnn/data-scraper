@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class ScrapedProduct extends Model
 {
@@ -27,14 +28,33 @@ class ScrapedProduct extends Model
         ];
     }
 
-    public function product(): BelongsTo
+    public function productRetailer(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(ProductRetailer::class);
     }
 
-    public function retailer(): BelongsTo
+    public function product(): HasOneThrough
     {
-        return $this->belongsTo(Retailer::class);
+        return $this->hasOneThrough(
+            Product::class,
+            ProductRetailer::class,
+            'id',
+            'id',
+            'product_retailer_id',
+            'product_id'
+        );
+    }
+
+    public function retailer(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            Retailer::class,
+            ProductRetailer::class,
+            'id',
+            'id',
+            'product_retailer_id',
+            'retailer_id'
+        );
     }
 
     public function scrapedImages(): HasMany
