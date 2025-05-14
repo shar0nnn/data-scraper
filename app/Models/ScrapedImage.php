@@ -10,7 +10,7 @@ class ScrapedImage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'scraped_product_id',
+        'product_retailer_id',
         'url',
         'file_name'
     ];

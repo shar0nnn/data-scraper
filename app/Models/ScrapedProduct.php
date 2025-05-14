@@ -13,8 +13,7 @@ class ScrapedProduct extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id',
-        'retailer_id',
+        'product_retailer_id',
         'price',
         'stock_count',
         'rating',
