@@ -20,23 +20,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-//        DB::statement('SET FOREIGN_KEY_CHECKS=0');
-//        DB::table('userables')->truncate();
-//        DB::table('personal_access_tokens')->truncate();
-//        ScrapedImage::query()->truncate();
-//        Image::query()->truncate();
-//        ScrapedProduct::query()->truncate();
-//        ScrapingSession::query()->truncate();
-//        DB::table('product_retailer')->truncate();
-//        Product::query()->truncate();
-//        Retailer::query()->truncate();
-//        PackSize::query()->truncate();
-//        Currency::query()->truncate();
-//        User::query()->truncate();
-//        Location::query()->truncate();
-//        Role::query()->truncate();
-//        DB::statement('SET FOREIGN_KEY_CHECKS=1');
-
         DB::table('userables')->delete();
         DB::table('personal_access_tokens')->delete();
         ScrapedImage::query()->delete();

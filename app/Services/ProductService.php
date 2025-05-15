@@ -78,6 +78,23 @@ class ProductService
             }
 
             if (isset($data['retailers'])) {
+                $newRetailers = collect($data['retailers'])->pluck('id')->toArray();
+
+                $removedRetailers = $product->retailers()
+                    ->whereNotIn('retailers.id', $newRetailers)
+                    ->pluck('retailers.id')
+                    ->toArray();
+
+                if (! empty($removedRetailers)) {
+                    $product->scrapedImages()
+                        ->whereIn('product_retailer.retailer_id', $removedRetailers)
+                        ->delete();
+
+                    $product->scrapedProducts()
+                        ->whereIn('product_retailer.retailer_id', $removedRetailers)
+                        ->delete();
+                }
+
                 $product->retailers()->sync(
                     collect($data['retailers'])->mapWithKeys(function ($retailer) {
                         return [$retailer['id'] => [
@@ -92,7 +109,7 @@ class ProductService
 
         } catch (Throwable $throwable) {
             DB::rollBack();
-            Log::stack(['retailers'])->error($throwable->getMessage());
+            Log::channel('products')->error($throwable->getMessage());
             if ($newImages) {
                 foreach ($newImages as $image) {
                     Storage::disk('public')->delete($image->link);
@@ -110,9 +127,7 @@ class ProductService
 
             DB::beginTransaction();
             $product->images()->delete();
-            $product->scrapedProducts->each(function ($scrapedProduct) {
-                $scrapedProduct->scrapedImages()->delete();
-            });
+            $product->scrapedImages()->delete();
             $product->scrapedProducts()->delete();
             $product->retailers()->detach();
             $product->delete();

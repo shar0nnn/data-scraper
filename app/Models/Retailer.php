@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Retailer extends Model
@@ -35,8 +35,27 @@ class Retailer extends Model
         return $this->belongsToMany(Product::class)->withPivot('url');
     }
 
-    public function scrapedProducts(): HasMany
+    public function scrapedProducts(): HasManyThrough
     {
-        return $this->hasMany(ScrapedProduct::class);
+        return $this->hasManyThrough(
+            ScrapedProduct::class,
+            ProductRetailer::class,
+            'retailer_id',
+            'product_retailer_id',
+            'id',
+            'id'
+        );
+    }
+
+    public function scrapedImages(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            ScrapedImage::class,
+            ProductRetailer::class,
+            'retailer_id',
+            'product_retailer_id',
+            'id',
+            'id'
+        );
     }
 }
