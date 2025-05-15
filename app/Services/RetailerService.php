@@ -3,9 +3,7 @@
 namespace App\Services;
 
 use App\Filters\ScrapedProductFilter;
-use App\Models\Product;
 use App\Models\Retailer;
-use App\Models\ScrapedProduct;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -76,9 +74,7 @@ class RetailerService
             DB::beginTransaction();
             $link = $retailer->logo->link;
             $retailer->logo()->delete();
-            $retailer->scrapedProducts->each(function ($scrapedProduct) {
-                $scrapedProduct->scrapedImages()->delete();
-            });
+            $retailer->scrapedImages()->delete();
             $retailer->scrapedProducts()->delete();
             $retailer->products()->detach();
             $retailer->delete();
