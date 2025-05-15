@@ -56,11 +56,6 @@ class ScrapedProduct extends Model
         );
     }
 
-    public function scrapedImages(): HasMany
-    {
-        return $this->hasMany(ScrapedImage::class);
-    }
-
     public function scrapingSession(): BelongsTo
     {
         return $this->belongsTo(ScrapingSession::class);
