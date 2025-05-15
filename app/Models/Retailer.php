@@ -46,4 +46,16 @@ class Retailer extends Model
             'id'
         );
     }
+
+    public function scrapedImages(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            ScrapedImage::class,
+            ProductRetailer::class,
+            'retailer_id',
+            'product_retailer_id',
+            'id',
+            'id'
+        );
+    }
 }
