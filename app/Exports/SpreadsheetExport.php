@@ -3,14 +3,14 @@
 namespace App\Exports;
 
 use App\Services\SpreadsheetService;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Maatwebsite\Excel\Concerns\WithEvents;
 
 class SpreadsheetExport extends SpreadsheetService implements WithEvents
 {
     protected string $fileName;
 
-    protected Carbon $deletionDelay;
+    protected CarbonImmutable $deletionDelay;
 
     public function __construct()
     {
@@ -33,7 +33,7 @@ class SpreadsheetExport extends SpreadsheetService implements WithEvents
         return $this->fileName;
     }
 
-    public function getDeletionDelay(): Carbon
+    public function getDeletionDelay(): CarbonImmutable
     {
         return $this->deletionDelay;
     }

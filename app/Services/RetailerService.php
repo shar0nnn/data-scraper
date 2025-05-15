@@ -74,9 +74,7 @@ class RetailerService
             DB::beginTransaction();
             $link = $retailer->logo->link;
             $retailer->logo()->delete();
-            $retailer->scrapedProducts->each(function ($scrapedProduct) {
-                $scrapedProduct->scrapedImages()->delete();
-            });
+            $retailer->scrapedImages()->delete();
             $retailer->scrapedProducts()->delete();
             $retailer->products()->detach();
             $retailer->delete();
@@ -95,11 +93,12 @@ class RetailerService
 
     public function metrics(ScrapedProductFilter $scrapedProductFilter): Builder
     {
-        $queryBuilder = DB::table('scraped_products')
+        $queryBuilder = DB::table('retailers')
             ->selectRaw('
-        retailer_id,
-        retailers.title as retailer_title,
-        ROUND(AVG(price), 2) as average_price,
+        retailers.id AS retailer_id,
+        retailers.title AS retailer_title,
+        ROUND(AVG(scraped_products.price), 2) AS average_price,
+        ROUND(AVG(count_images.number_of_images), 1) AS average_number_of_images,
         ROUND(
             SUM(
                 (
@@ -134,15 +133,23 @@ class RetailerService
                     CAST(JSON_EXTRACT(rating, "$.\"5\"") AS DECIMAL(10,2))
                 ), 0
             ), 2
-        ) as average_rating,
-        ROUND(AVG(count_images_table.scraped_product_average_number_of_images), 1) as average_number_of_images')
-            ->join('retailers', 'scraped_products.retailer_id', '=', 'retailers.id')
+        ) as average_rating')
+            ->join('product_retailer', 'product_retailer.retailer_id', '=', 'retailers.id')
+            ->join('scraped_products', 'scraped_products.product_retailer_id', '=', 'product_retailer.id')
             ->leftJoin(DB::raw('(
-        SELECT scraped_product_id, COUNT(id) AS scraped_product_average_number_of_images
+        SELECT product_retailer_id, COUNT(*) AS number_of_images
         FROM scraped_images
-        GROUP BY scraped_product_id
-        ) AS count_images_table'), 'scraped_products.id', '=', 'count_images_table.scraped_product_id')
-            ->groupBy('retailer_id');
+        GROUP BY product_retailer_id
+        ) AS count_images'), 'product_retailer.id', '=', 'count_images.product_retailer_id')
+            ->groupBy('retailers.id', 'retailers.title');
+
+        $queryBuilder = $scrapedProductFilter->apply($queryBuilder);
+
+        if (isset($scrapedProductFilter->appliedFilters['start_date']) || isset($scrapedProductFilter->appliedFilters['end_date'])) {
+            $queryBuilder
+                ->addSelect(DB::raw('DATE_FORMAT(scraping_sessions.created_at, "%d.%m.%Y") AS scraped_at'))
+                ->groupBy('scraping_sessions.id');
+        }
 
         return $scrapedProductFilter->apply($queryBuilder);
     }

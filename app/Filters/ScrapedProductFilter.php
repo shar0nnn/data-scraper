@@ -2,36 +2,42 @@
 
 namespace App\Filters;
 
+use App\Actions\SplitString;
 use App\Services\DateService;
 use Illuminate\Http\Request;
 
 class ScrapedProductFilter extends QueryStringFilters
 {
-    public function __construct(protected Request $request)
+    public function __construct(
+        protected Request $request,
+    )
     {
         parent::__construct($request);
     }
 
-    private function explodeValues(string $values): array
-    {
-        return array_filter(explode(',', $values));
-    }
 
-    public function retailer_ids($value): void
-    {
-        $this->queryBuilder->whereIn('retailer_id', $this->explodeValues($value));
-    }
-
-    public function product_ids($value): void
-    {
-        $this->queryBuilder->whereIn('product_id', $this->explodeValues($value));
-    }
-
-    public function manufacturer_part_numbers($value): void
+    public function retailer_ids($values): void
     {
         $this->queryBuilder
-            ->join('products', 'product_id', '=', 'products.id')
-            ->whereIn('manufacturer_part_number', $this->explodeValues($value));
+            ->joinOnce('product_retailer', 'scraped_products.product_retailer_id', '=', 'product_retailer.id')
+            ->joinOnce('retailers', 'retailers.id', '=', 'product_retailer.retailer_id')
+            ->whereIn('retailers.id', SplitString::handle($values));
+    }
+
+    public function product_ids($values): void
+    {
+        $this->queryBuilder
+            ->joinOnce('product_retailer', 'scraped_products.product_retailer_id', '=', 'product_retailer.id')
+            ->joinOnce('products', 'products.id', '=', 'product_retailer.product_id')
+            ->whereIn('products.id', SplitString::handle($values));
+    }
+
+    public function manufacturer_part_numbers($values): void
+    {
+        $this->queryBuilder
+            ->joinOnce('product_retailer', 'scraped_products.product_retailer_id', '=', 'product_retailer.id')
+            ->joinOnce('products', 'products.id', '=', 'product_retailer.product_id')
+            ->whereIn('manufacturer_part_number', SplitString::handle($values));
     }
 
     public function start_date($value): void

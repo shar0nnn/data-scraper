@@ -32,8 +32,7 @@ class RetailersMetricsExport extends SpreadsheetExport implements FromQuery, Wit
             'average_price',
             'average_rating',
             'average_number_of_images',
-            'start_date',
-            'end_date',
+            'scraped_at',
         ];
     }
 
@@ -47,8 +46,7 @@ class RetailersMetricsExport extends SpreadsheetExport implements FromQuery, Wit
             $scrapedProduct->average_price,
             $scrapedProduct->average_rating,
             $scrapedProduct->average_number_of_images,
-            $this->filter->appliedFilters['start_date'] ?? null,
-            $this->filter->appliedFilters['end_date'] ?? null,
+            $scrapedProduct->scraped_at ?? null,
         ];
     }
 

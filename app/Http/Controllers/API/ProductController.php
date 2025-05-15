@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Exports\ProductsExport;
+use App\Filters\ProductFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\ImportProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
@@ -32,10 +33,12 @@ class ProductController extends Controller
     {
     }
 
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request, ProductFilter $filter): AnonymousResourceCollection
     {
         return ProductResource::collection(
-            $request->user()->products()->with(['images', 'packSize'])->paginate(10)
+            $request->user()->products()->with('packSize')->filter($filter)->paginate(10)
+        )->additional(
+            ['meta' => ['applied_filters' => $filter->appliedFilters]]
         );
     }
 
