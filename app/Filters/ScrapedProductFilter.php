@@ -18,18 +18,25 @@ class ScrapedProductFilter extends QueryStringFilters
 
     public function retailer_ids($values): void
     {
-        $this->queryBuilder->whereIn('retailer_id', SplitString::handle($values));
+        $this->queryBuilder
+            ->joinOnce('product_retailer', 'scraped_products.product_retailer_id', '=', 'product_retailer.id')
+            ->joinOnce('retailers', 'retailers.id', '=', 'product_retailer.retailer_id')
+            ->whereIn('retailers.id', SplitString::handle($values));
     }
 
     public function product_ids($values): void
     {
-        $this->queryBuilder->whereIn('product_id', SplitString::handle($values));
+        $this->queryBuilder
+            ->joinOnce('product_retailer', 'scraped_products.product_retailer_id', '=', 'product_retailer.id')
+            ->joinOnce('products', 'products.id', '=', 'product_retailer.product_id')
+            ->whereIn('products.id', SplitString::handle($values));
     }
 
     public function manufacturer_part_numbers($values): void
     {
         $this->queryBuilder
-            ->join('products', 'product_id', '=', 'products.id')
+            ->joinOnce('product_retailer', 'scraped_products.product_retailer_id', '=', 'product_retailer.id')
+            ->joinOnce('products', 'products.id', '=', 'product_retailer.product_id')
             ->whereIn('manufacturer_part_number', SplitString::handle($values));
     }
 

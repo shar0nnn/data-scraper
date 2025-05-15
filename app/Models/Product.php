@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use App\Filters\Filterable;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
@@ -52,8 +51,27 @@ class Product extends Model
         return $this->belongsToMany(Retailer::class)->withPivot('url')->withTimestamps();
     }
 
-    public function scrapedProducts(): HasMany
+    public function scrapedProducts(): HasManyThrough
     {
-        return $this->hasMany(ScrapedProduct::class);
+        return $this->hasManyThrough(
+            ScrapedProduct::class,
+            ProductRetailer::class,
+            'product_id',
+            'product_retailer_id',
+            'id',
+            'id'
+        );
+    }
+
+    public function scrapedImages(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            ScrapedImage::class,
+            ProductRetailer::class,
+            'product_id',
+            'product_retailer_id',
+            'id',
+            'id'
+        );
     }
 }

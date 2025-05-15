@@ -12,21 +12,19 @@ class ScrapedProductSeeder extends MainSeeder
     public function run(): void
     {
         $scrapedProducts = [];
-        $retailers = Retailer::query()->pluck('id');
-        $products = DB::table('product_retailer')
-            ->select('retailer_id', 'product_id')
+        $productsByRetailer = DB::table('product_retailer')
+            ->select('id', 'retailer_id')
             ->get()
             ->groupBy('retailer_id')
-            ->map(fn($group) => $group->pluck('product_id'));
+            ->map(fn($group) => $group->pluck('id'));
         $scrapingSessions = ScrapingSession::query()->pluck('id');
         $currentScrapingSession = 0;
 
         for ($i = 0; $i < 365; $i++) {
-            foreach ($retailers as $retailer) {
-                foreach ($products[$retailer] as $product) {
+            foreach ($productsByRetailer as $productIds) {
+                foreach ($productIds as $productId) {
                     $scrapedProducts[] = [
-                        'product_id' => $product,
-                        'retailer_id' => $retailer,
+                        'product_retailer_id' => $productId,
                         'price' => $this->faker->randomFloat(2, 0, 100000),
                         'stock_count' => $this->faker->numberBetween(0, 100000),
                         'rating' => json_encode([

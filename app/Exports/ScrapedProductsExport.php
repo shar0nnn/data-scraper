@@ -57,8 +57,8 @@ class ScrapedProductsExport extends SpreadsheetExport implements FromGenerator, 
         foreach (
             $this->filter->apply(
                 ScrapedProduct::query()
-                    ->with(['product:id,title', 'retailer:id,title', 'scrapingSession:id,created_at'])
-                    ->select(['id', 'product_id', 'retailer_id', 'scraping_session_id', 'price', 'stock_count', 'rating'])
+                    ->with(['productRetailer.product:id,title', 'productRetailer.retailer:id,title', 'scrapingSession:id,created_at'])
+                    ->select(['id', 'product_retailer_id', 'scraping_session_id', 'price', 'stock_count', 'rating'])
                     ->orderBy('id')
             )->lazy(5000) as $scrapedProduct
         ) {
